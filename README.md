@@ -1,7 +1,7 @@
 # Computer Graphics 203.3710
 ## Students Team data
 
-Name: 
+Name: Or Meir
 
 Student Number: 
 
