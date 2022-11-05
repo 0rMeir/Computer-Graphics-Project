@@ -4,6 +4,7 @@
 
 #include "Renderer.h"
 #include "InitShader.h"
+#include <glm/gtx/transform.hpp>
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
@@ -33,6 +34,36 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 
 void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
 {
+	double c;
+	int transformMul = 1;
+	glm::ivec2 point(p1);
+	int& coordinate1 = point.x;
+	int& coordinate2 = point.y;
+
+	double m = (p1.y - p2.y) / (p1.x - p2.x);
+
+	if (m < -1|| m > 1)
+	{
+		int& coordinate1 = point.y;
+		int& coordinate2 = point.x;
+		if (m < -1)
+		{
+			transformMul = -1;
+		}
+	}
+
+	while (point.x != p2.x)
+	{
+		
+	}
+
+
+	
+	for (int i = 0 ; i < 360; i += 2)
+	{
+		PutPixel(640 + i, 360 + i, glm::ivec3(0, 0, 0));
+		PutPixel(640 - i, 360 + i, glm::ivec3(0, 0, 0));
+	}
 	// TODO: Implement bresenham algorithm
 	// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 }
@@ -173,6 +204,15 @@ void Renderer::Render(const Scene& scene)
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
+	glm::ivec3 color = glm::ivec3(0, 0, 0);
+	glm::ivec2 point1 = glm::ivec2(half_width,half_height);
+	glm::ivec2 point2 = glm::ivec2(point1.x + 50, point1.y);
+	for (int i = 0; i < 12180; i++)
+	{	
+		DrawLine(point1, point2, color);
+		//end = (glm::rotate(5, glm::vec3(1, 1, 0)))*end;
+
+	}
 	// draw circle
 
 }

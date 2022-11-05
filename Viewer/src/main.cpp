@@ -178,6 +178,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			if (ImGui::MenuItem("Open", "CTRL+O"))
 			{
+				
 				nfdchar_t* outPath = NULL;
 				nfdresult_t result = NFD_OpenDialog("obj;", NULL, &outPath);
 				if (result == NFD_OKAY)
@@ -191,6 +192,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				else
 				{
 				}
+				
 
 			}
 			ImGui::EndMenu();
