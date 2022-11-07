@@ -34,36 +34,53 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 
 void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
 {
-	int transformMul = 1;
-	glm::ivec2 point(p1);
-	int& coordinate1 = point.x;
-	int& coordinate2 = point.y;
-	double m = (p1.y - p2.y) / (p1.x - p2.x);
-	double c = (p1.y) / (m * p1.x);
-
-	if (m < -1 || m > 1)
+	glm::ivec2 start(p1), end(p2);
+	if (p1.x > p2.x)
 	{
-		int& coordinate1 = point.y;
-		int& coordinate2 = point.x;
+		start = p2;
+		end = p1;
+	}
+	else if (p1.x == p2.x)
+	{
+		start = (p1.y > p2.y) ? p2 : p1;
+		end = (start.y == p1.y)? p2 : p1;
+	}
+
+	int transform1 = 1; int transform2 = 1;
+	int* coordinate1 = &start.y; int* coordinate2 = &start.x;
+	int* theEnd = &end.x;
+	int deltaX = (start.x - end.x);	int deltaY = (start.y - end.y);
+	double m = (deltaX)? deltaY / deltaX: 0;
+
+	if(m < -1 || m > 1 || !deltaX)
+	{
+		coordinate1 = &start.x;
+		coordinate2 = &start.y;
+		theEnd = &end.y;
 		if (m < -1)
 		{
-			transformMul = -1;
+			transform2 = -1;
 		}
 	}
-
-	while (point.x != p2.x)
+	if (m<0 && m>-1)
 	{
-		double distance = (m * point.x) + c - point.y;
-		if (distance > 0.5);
-		{
-			coordinate1 += (1*transformMul);
-		}
-		PutPixel(point.x, point.y, color);
-		coordinate2 += 1;	
+		transform1 = -1;
 	}
 
-	// TODO: Implement bresenham algorithm
-	// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+	int e = -1*deltaX;
+	while (*coordinate2 != *theEnd)
+	{
+		if (e > 0)
+		{
+			*coordinate1 += transform1;
+			e -= 2*(deltaX);
+		}
+
+		PutPixel(start.x, start.y, color);
+		*coordinate2 += transform2;	
+		e += 2*(deltaY);
+		
+	}
 }
 
 void Renderer::CreateBuffers(int w, int h)
@@ -203,9 +220,10 @@ void Renderer::Render(const Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 	glm::ivec3 color = glm::ivec3(0, 0, 0);
-	glm::ivec2 point1 = glm::ivec2(half_width,half_height);
-	glm::ivec2 point2 = glm::ivec2(point1.x+100,point1.y);
+	glm::ivec2 point1 = glm::ivec2(half_width, half_height);
+	glm::ivec2 point2 = glm::ivec2(half_width+300, half_height+300);
 	DrawLine(point1, point2, color);
+
 
 
 	//end = (glm::rotate(5, glm::vec3(1, 1, 0)))*end;
