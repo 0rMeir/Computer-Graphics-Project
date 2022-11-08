@@ -35,6 +35,7 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 
 void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
 {
+	
 	glm::ivec2 start = glm::ivec2(p1);
 	glm::ivec2 end = glm::ivec2(p2);
 	if (p1.x > p2.x)
@@ -87,6 +88,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 		*coordinate2 += transform2;	
 		e += 2*(secondDelta)*secondDeltaChange;	
 	}
+
 }
 
 
@@ -225,12 +227,26 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 void Renderer::Render(const Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
+	double pie = 3.14159265;
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 	glm::ivec3 color = glm::ivec3(0, 0, 0);
 	glm::ivec2 point1 = glm::ivec2(half_width, half_height);
-	glm::ivec2 point2 = glm::ivec2(half_width-200, half_height);
-	DrawLine(point1, point2, color);
+	glm::ivec2 point2 = glm::ivec2(half_width, half_height);
+	
+	double angle = (2 * M_PI) / 100;
+	double newAngle= (2 * M_PI) / 100;
+
+
+	for (int i = 0; i <= 100; i++)
+	{
+		DrawLine(point1,point2,color);
+		point2.x = 300 * cos(angle*i) + half_width;
+		point2.y = 300 *sin(angle*i)+ half_height;
+	}
+
+
+
 
 
 
