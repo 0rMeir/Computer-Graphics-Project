@@ -1,7 +1,4 @@
-
-
-void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
-{
+	
 	glm::ivec2 start = glm::ivec2(p1);
 	glm::ivec2 end = glm::ivec2(p2);
 	if (p1.x > p2.x)
@@ -54,7 +51,8 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 		*coordinate2 += transform2;	
 		e += 2*(secondDelta)*secondDeltaChange;	
 	}
-}
+
+	
 
 
 ![sanityCheck](https://user-images.githubusercontent.com/100144150/200578593-d49ca734-5c32-45e5-9056-199eb8c3d85b.JPG)
