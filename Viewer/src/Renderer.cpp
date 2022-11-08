@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 #include "Renderer.h"
 #include "InitShader.h"
@@ -34,54 +35,61 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 
 void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
 {
-	glm::ivec2 start(p1), end(p2);
+	glm::ivec2 start = glm::ivec2(p1);
+	glm::ivec2 end = glm::ivec2(p2);
 	if (p1.x > p2.x)
 	{
-		start = p2;
-		end = p1;
+		start = glm::ivec2(p2);
+		end = glm::ivec2(p1);
 	}
-	else if (p1.x == p2.x)
-	{
-		start = (p1.y > p2.y) ? p2 : p1;
-		end = (start.y == p1.y)? p2 : p1;
-	}
+	int transform1 = 1, transform2 = 1;
+	int* coordinate1 = &start.y;
+	int* coordinate2 = &start.x;
+	int firstDelta = (end.x - start.x);
+	int secondDelta = (end.y - start.y);
 
-	int transform1 = 1; int transform2 = 1;
-	int* coordinate1 = &start.y; int* coordinate2 = &start.x;
-	int* theEnd = &end.x;
-	int deltaX = (start.x - end.x);	int deltaY = (start.y - end.y);
-	double m = (deltaX)? deltaY / deltaX: 0;
+	double m = ((double)secondDelta / (double)firstDelta);
 
-	if(m < -1 || m > 1 || !deltaX)
+	int theEnd = end.x;
+	int* theStart = &start.x;
+	int firstDeltaChange = 1;
+	int secondDeltaChange = 1;
+	int e = 0;
+
+	if(m < -1 || m > 1)
 	{
 		coordinate1 = &start.x;
 		coordinate2 = &start.y;
-		theEnd = &end.y;
+		theEnd = end.y;
+		theStart = &start.y;
+		swap(firstDelta, secondDelta);
+
 		if (m < -1)
 		{
 			transform2 = -1;
+			firstDeltaChange = -1;
 		}
 	}
-	if (m<0 && m>-1)
+	if (m<=0 && m>=-1)
 	{
 		transform1 = -1;
+		secondDeltaChange = -1;
 	}
 
-	int e = -1*deltaX;
-	while (*coordinate2 != *theEnd)
+	while (*theStart != theEnd)
 	{
 		if (e > 0)
 		{
 			*coordinate1 += transform1;
-			e -= 2*(deltaX);
+			e -= 2 * (firstDelta)*firstDeltaChange;
 		}
-
 		PutPixel(start.x, start.y, color);
 		*coordinate2 += transform2;	
-		e += 2*(deltaY);
-		
+		e += 2*(secondDelta)*secondDeltaChange;	
 	}
 }
+
+
 
 void Renderer::CreateBuffers(int w, int h)
 {
@@ -221,7 +229,7 @@ void Renderer::Render(const Scene& scene)
 	int half_height = viewport_height / 2;
 	glm::ivec3 color = glm::ivec3(0, 0, 0);
 	glm::ivec2 point1 = glm::ivec2(half_width, half_height);
-	glm::ivec2 point2 = glm::ivec2(half_width+300, half_height+300);
+	glm::ivec2 point2 = glm::ivec2(half_width-200, half_height);
 	DrawLine(point1, point2, color);
 
 
