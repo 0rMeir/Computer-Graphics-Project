@@ -271,10 +271,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	{
 	ImGui::SetWindowSize(ImVec2(200,200), ImGuiCond(0));
-	ImGui::Begin("World Transformations");
+	ImGui::Begin("Local Transformations");
 	ImGui::Text("Transformation");
 
-	if(ImGui::CollapsingHeader("Translate"))
+	if(ImGui::CollapsingHeader("Translation"))
 	{ 
 		ImGui::Text("Translate");
 		static float X_Axis=0;
@@ -283,13 +283,13 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::SetNextItemWidth(70);
 		if (ImGui::SliderFloat("X-Axis", &X_Axis, -100, 100))
 		{
-			scene.GetActiveModel().TranslateLocal(X_Axis, Y_Axis, Z_Axis);
+			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(40);
 		if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -100, 100))
 		{
-			scene.GetActiveModel().TranslateLocal(X_Axis, Y_Axis, Z_Axis);
+			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
 	}
 
@@ -298,12 +298,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float scaleFactor=0;
 
 		ImGui::SetNextItemWidth(80);
-		if (ImGui::SliderFloat("Scale", &scaleFactor, -200, 200))
+		if (ImGui::SliderFloat("Scale", &scaleFactor, 1, 10))
 		{
 			scene.GetActiveModel().scale(scaleFactor, scaleFactor);
 		}
 	}
-
 	if (ImGui::CollapsingHeader("Rotation"))
 	{
 		static float angle;
@@ -316,26 +315,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			cout << "im here" << endl;
 		}
 	}
-
-	if (ImGui::CollapsingHeader("Reflection"))
-	{
-
-		if (ImGui::Button("reflect"))
-		{
-			cout << "im here" << endl;
-		}
-	}
-
-	if (ImGui::CollapsingHeader("Shearing"))
-	{
-
-		if (ImGui::Button("shear"))
-		{
-			cout << "im here" << endl;
-		}
-	}
-
-
 	ImGui::End(); }
 
 }

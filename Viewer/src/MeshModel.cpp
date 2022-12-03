@@ -7,6 +7,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	normals(normals)
 {
 
+
 }
 
 MeshModel::~MeshModel()
@@ -33,20 +34,44 @@ const std::string& MeshModel::GetModelName() const
 {
 	return model_name;
 }
-void MeshModel::TranslateLocal(float x, float y, float z)
+void MeshModel::translateLocal(float x, float y, float z)
 {
-	LTranslate = glm::translate(LTranslate, glm::vec3(x, y, z));
-	Transform = scaleMat * LTranslate;
-	
+	float temp = x;
+	if (x > 0)
+	{
+		x = (x > lastLocalT.x) ? x : x - lastLocalT.x;
+	}
+	else
+	{
+		x = (x > lastLocalT.x) ? x - lastLocalT.x : x;
+	}
+	lastLocalT.x = temp;
+
+	localTransformMat = glm::translate(localTransformMat, glm::vec3(x, y, z));
+	updateLocal();
 }
 
 void MeshModel::scale(float x,float y)
 {
-	scaleMat = glm::scale(scaleMat, glm::vec3(x, y, 1));
-	Transform = scaleMat * LTranslate;
+	float temp = x;
 
+	if (x > 1)
+	{
+		x = (x > lastLocalS.x) ? x : x/lastLocalS.x;
+	}
+	else if (x == 1)
+	{
+		x =  lastLocalS.x;
+	}
+	else
+	{
+	}
+
+	lastLocalS.x = temp;
+
+	localScaleMat = glm::scale(localScaleMat, glm::vec3(x, x, x));
+	updateLocal();
 }
-
 
 
 void MeshModel::rotate(float x)
@@ -54,3 +79,12 @@ void MeshModel::rotate(float x)
 
 
 }
+
+void MeshModel::updateLocal()
+{
+
+	localTransformMat = localScaleMat * localTransformMat;
+
+}
+
+
