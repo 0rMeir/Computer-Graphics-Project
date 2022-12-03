@@ -280,14 +280,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float X_Axis=0;
 		static float Y_Axis=0;
 		static float Z_Axis=0;
-		ImGui::SetNextItemWidth(70);
-		if (ImGui::SliderFloat("X-Axis", &X_Axis, -100, 100))
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("X-Axis", &X_Axis, -10, 10))
 		{
 			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(40);
-		if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -100, 100))
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -10, 10))
 		{
 			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
@@ -297,24 +297,30 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	{ 
 		static float scaleFactor=0;
 
-		ImGui::SetNextItemWidth(80);
-		if (ImGui::SliderFloat("Scale", &scaleFactor, 1, 10))
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Scale", &scaleFactor, 1, 500))
 		{
-			scene.GetActiveModel().scale(scaleFactor, scaleFactor);
+			scene.GetActiveModel().scaleLocal(scaleFactor, scaleFactor);
 		}
 	}
+
 	if (ImGui::CollapsingHeader("Rotation"))
 	{
-		static float angle;
-		ImGui::Text("Enter angle ");
-		ImGui::SetNextItemWidth(40);
-		ImGui::InputFloat("angle", &angle);
-		ImGui::SameLine();
-		if (ImGui::Button("rotate"))
+		static float Xangle;
+		static float Yangle;
+
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("X-Axis Rotation Angle", &Xangle, 1, 360))
 		{
-			cout << "im here" << endl;
+			scene.GetActiveModel().rotateLocalX(Xangle);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Y-Axis Rotation Angle", &Yangle, 1, 360))
+		{
+			scene.GetActiveModel().rotateLocalY(Yangle);
 		}
 	}
+
 	ImGui::End(); }
 
 }

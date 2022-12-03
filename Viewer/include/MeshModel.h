@@ -18,20 +18,17 @@ public:
 	void translateLocal(float x, float y, float z);
 	void translateWorld(float x, float y, float z);
 	void updateLocal();
-	void scale(float x,float y);
-	void rotate(float x);
-	glm::mat4 scaleMat = glm::mat4(1.0f);
+	void scaleLocal(float x,float y);
+	void rotateLocalX(float x);
+	void rotateLocalY(float x);
 	glm::mat4 rotateMat = glm::mat4(1.0f);
 	glm::vec3 modelCenter = glm::vec3(1880/2, 1320/2,0);
 	glm::mat4 localTransformMat = glm::mat4(1.0f);
 	glm::mat4 localScaleMat = glm::mat4(1.0f);
-	glm::mat4 worldTransformMat = glm::mat4(1.0f);
-	glm::vec2 lastLocalT = glm::vec2(0, 0);
-	glm::vec2 lastLocalS = glm::vec2(0, 0);
-
-
-
-
+	glm::mat4 localTranslateMat = glm::mat4(1.0f);
+	glm::mat4 localRotationMatX = glm::mat4(1.0f);
+	glm::mat4 localRotationMatY = glm::mat4(1.0f);
+	glm::mat4 localRotationMatZ = glm::mat4(1.0f);
 
 
 private:

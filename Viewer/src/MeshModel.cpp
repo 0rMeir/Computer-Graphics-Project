@@ -1,5 +1,9 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "MeshModel.h"
 #include "math.h"
+#include <algorithm>
+
 
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name) :
 	faces(faces),
@@ -36,55 +40,69 @@ const std::string& MeshModel::GetModelName() const
 }
 void MeshModel::translateLocal(float x, float y, float z)
 {
-	float temp = x;
-	if (x > 0)
-	{
-		x = (x > lastLocalT.x) ? x : x - lastLocalT.x;
-	}
-	else
-	{
-		x = (x > lastLocalT.x) ? x - lastLocalT.x : x;
-	}
-	lastLocalT.x = temp;
-
-	localTransformMat = glm::translate(localTransformMat, glm::vec3(x, y, z));
+	localTranslateMat = glm::translate(glm::vec3(x, y, z));
+	modelCenter.x += x;
+	modelCenter.y += y;
 	updateLocal();
 }
 
-void MeshModel::scale(float x,float y)
+void MeshModel::scaleLocal(float x,float y)
 {
-	float temp = x;
+	localScaleMat = glm::scale(glm::vec3(x, x, 1));
+	updateLocal();
 
-	if (x > 1)
-	{
-		x = (x > lastLocalS.x) ? x : x/lastLocalS.x;
-	}
-	else if (x == 1)
-	{
-		x =  lastLocalS.x;
-	}
-	else
-	{
-	}
+}
 
-	lastLocalS.x = temp;
-
-	localScaleMat = glm::scale(localScaleMat, glm::vec3(x, x, x));
+void MeshModel::rotateLocalX(float x)
+{
+	localRotationMatX = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(modelCenter.x, 0, 0));
 	updateLocal();
 }
 
-
-void MeshModel::rotate(float x)
+void MeshModel::rotateLocalY(float x)
 {
-
-
+	localRotationMatY = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, modelCenter.y, 0));
+	updateLocal();
 }
 
 void MeshModel::updateLocal()
 {
 
-	localTransformMat = localScaleMat * localTransformMat;
+	localTransformMat = localScaleMat * localRotationMatX*localRotationMatY* localTranslateMat;
+}
 
+
+void MeshModel::translateLocal(float x, float y, float z)
+{
+	localTranslateMat = glm::translate(glm::vec3(x, y, z));
+	modelCenter.x += x;
+	modelCenter.y += y;
+	updateLocal();
+}
+
+void MeshModel::worldScale(float x, float y)
+{
+	WorldScaleMat = glm::scale(glm::vec3(x, x, 1));
+	updateWorld();
+
+}
+
+void MeshModel::rotateWorldX(float x)
+{
+	localRotationMatX = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(modelCenter.x, 0, 0));
+	updateLocal();
+}
+
+void MeshModel::rotateWorldY(float x)
+{
+	localRotationMatY = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, modelCenter.y, 0));
+	updateLocal();
+}
+
+void MeshModel::updateWorld()
+{
+
+	localTransformMat = localScaleMat * localRotationMatX * localRotationMatY * localTranslateMat;
 }
 
 
