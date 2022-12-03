@@ -323,8 +323,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	ImGui::End(); }
 
-
-
 	{
 		ImGui::SetWindowSize(ImVec2(200, 200), ImGuiCond(0));
 		ImGui::Begin("World Transformations");

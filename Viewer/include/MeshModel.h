@@ -19,6 +19,7 @@ public:
 	void translateWorld(float x, float y, float z);
 	void rotateWorldlX(float x);
 	void rotateWorldY(float x);
+	void scaleWorld(float x, float y);
 	void updateLocal();
 	void translateLocal(float x, float y, float z);
 	void scaleLocal(float x,float y);
