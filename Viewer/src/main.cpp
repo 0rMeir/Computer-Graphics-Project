@@ -323,4 +323,62 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	ImGui::End(); }
 
+
+
+	{
+		ImGui::SetWindowSize(ImVec2(200, 200), ImGuiCond(0));
+		ImGui::Begin("World Transformations");
+		ImGui::Text("Transformation");
+
+		if (ImGui::CollapsingHeader("Translation"))
+		{
+			ImGui::Text("Translate");
+			static float X_Axis = 0;
+			static float Y_Axis = 0;
+			static float Z_Axis = 0;
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("X-Axis", &X_Axis, -10, 10))
+			{
+				scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
+			}
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -10, 10))
+			{
+				scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Scaling"))
+		{
+			static float scaleFactor = 0;
+
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("Scale", &scaleFactor, 1, 500))
+			{
+				scene.GetActiveModel().scaleWorld(scaleFactor, scaleFactor);
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Rotation"))
+		{
+			static float Xangle;
+			static float Yangle;
+
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("X-Axis Rotation Angle", &Xangle, 1, 360))
+			{
+				scene.GetActiveModel().rotateWorldlX(Xangle);
+			}
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("Y-Axis Rotation Angle", &Yangle, 1, 360))
+			{
+				scene.GetActiveModel().rotateWorldY(Yangle);
+			}
+		}
+
+		ImGui::End(); }
+
+
+
 }

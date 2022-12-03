@@ -15,9 +15,12 @@ public:
 	int GetVerticesCount()const;
 	glm::vec3 GetVertex(int i);
 	const std::string& GetModelName() const;
-	void translateLocal(float x, float y, float z);
+	void updateWorld();
 	void translateWorld(float x, float y, float z);
+	void rotateWorldlX(float x);
+	void rotateWorldY(float x);
 	void updateLocal();
+	void translateLocal(float x, float y, float z);
 	void scaleLocal(float x,float y);
 	void rotateLocalX(float x);
 	void rotateLocalY(float x);
@@ -29,6 +32,12 @@ public:
 	glm::mat4 localRotationMatX = glm::mat4(1.0f);
 	glm::mat4 localRotationMatY = glm::mat4(1.0f);
 	glm::mat4 localRotationMatZ = glm::mat4(1.0f);
+	glm::mat4 worldTransformMat = glm::mat4(1.0f);
+	glm::mat4 worldScaleMat = glm::mat4(1.0f);
+	glm::mat4 worldTranslateMat = glm::mat4(1.0f);
+	glm::mat4 worldRotationMatX = glm::mat4(1.0f);
+	glm::mat4 worldRotationMatY = glm::mat4(1.0f);
+	glm::mat4 worldRotationMatZ = glm::mat4(1.0f);
 
 
 private:
