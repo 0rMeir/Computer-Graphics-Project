@@ -8,7 +8,7 @@
 
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
+#include <iostream>
 #include "Renderer.h"
 #include "Scene.h"
 #include "Utils.h"
@@ -42,7 +42,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char **argv)
 {
-	int windowWidth = 1280, windowHeight = 720;
+	int windowWidth = 1880, windowHeight = 1320;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -185,6 +185,27 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 					scene.AddModel(Utils::LoadMeshModel(outPath));
 					free(outPath);
+					
+						if (scene.getModelsNumber() > 0) {
+							MeshModel model = scene.GetModel(0);
+							for (int i = 0; i < model.GetVerticesCount(); i++) {
+								glm::vec3 temp = model.GetVertex(i);
+								cout << "v " << temp.x << " " << temp.y << " " << temp.z << endl;
+							}
+							for (int i = 0; i < model.GetFacesCount(); i++) {
+								int vertex0 = model.GetFace(i).GetVertexIndex(0);
+								int vertex1 = model.GetFace(i).GetVertexIndex(1);
+								int vertex2 = model.GetFace(i).GetVertexIndex(2);
+								int vertexn0 = model.GetFace(i).GetNormalIndex(0);
+								int vertexn1 = model.GetFace(i).GetNormalIndex(1);
+								int vertexn2 = model.GetFace(i).GetNormalIndex(2);
+								
+
+								cout << "f " << vertex0 << "//" << vertexn0<< " " << vertex1 << "//" << vertexn1 <<" "<<vertex2<<"//"<<vertexn2 << endl;
+							}
+						}
+
+					
 				}
 				else if (result == NFD_CANCEL)
 				{
@@ -193,7 +214,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 				}
 				
-
 			}
 			ImGui::EndMenu();
 		}
@@ -221,7 +241,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float f = 0.0f;
 		static int counter = 0;
 
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+		ImGui::Begin("My GUI");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
@@ -248,4 +268,74 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			show_another_window = false;
 		ImGui::End();
 	}
+
+	{
+	ImGui::SetWindowSize(ImVec2(200,200), ImGuiCond(0));
+	ImGui::Begin("World Transformations");
+	ImGui::Text("Transformation");
+
+	if(ImGui::CollapsingHeader("Translate"))
+	{ 
+		ImGui::Text("Translate");
+		static float X_Axis=0;
+		static float Y_Axis=0;
+		static float Z_Axis=0;
+		ImGui::SetNextItemWidth(70);
+		if (ImGui::SliderFloat("X-Axis", &X_Axis, -100, 100))
+		{
+			scene.GetActiveModel().TranslateLocal(X_Axis, Y_Axis, Z_Axis);
+		}
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(40);
+		if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -100, 100))
+		{
+			scene.GetActiveModel().TranslateLocal(X_Axis, Y_Axis, Z_Axis);
+		}
+	}
+
+	if(ImGui::CollapsingHeader("Scaling"))
+	{ 
+		static float scaleFactor=0;
+
+		ImGui::SetNextItemWidth(80);
+		if (ImGui::SliderFloat("Scale", &scaleFactor, -200, 200))
+		{
+			scene.GetActiveModel().scale(scaleFactor, scaleFactor);
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Rotation"))
+	{
+		static float angle;
+		ImGui::Text("Enter angle ");
+		ImGui::SetNextItemWidth(40);
+		ImGui::InputFloat("angle", &angle);
+		ImGui::SameLine();
+		if (ImGui::Button("rotate"))
+		{
+			cout << "im here" << endl;
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Reflection"))
+	{
+
+		if (ImGui::Button("reflect"))
+		{
+			cout << "im here" << endl;
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Shearing"))
+	{
+
+		if (ImGui::Button("shear"))
+		{
+			cout << "im here" << endl;
+		}
+	}
+
+
+	ImGui::End(); }
+
 }

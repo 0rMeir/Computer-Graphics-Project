@@ -27,11 +27,16 @@ public:
 
 	void SetActiveModelIndex(int index);
 	int GetActiveModelIndex() const;
+
+	int getModelsNumber() const;
+	void setModelsNumber(int amount);
+
 	
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
 	vector<shared_ptr<Camera>> cameras;
-
+	
 	int active_camera_index;
 	int active_model_index;
+	int modelsNumber = 0;
 };

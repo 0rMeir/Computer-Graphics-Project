@@ -227,32 +227,33 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 void Renderer::Render(const Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
-	double pie = 3.14159265;
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
-	glm::ivec3 color = glm::ivec3(0, 0, 0);
-	glm::ivec2 point1 = glm::ivec2(half_width, half_height);
-	glm::ivec2 point2 = glm::ivec2(half_width, half_height);
-	
-	double angle = (2 * M_PI) / 100;
-	double newAngle= (2 * M_PI) / 100;
-
-
-	for (int i = 0; i <= 100; i++)
+	if (scene.GetModelCount() > 0)
 	{
-		DrawLine(point1,point2,color);
-		point2.x = 300 * cos(angle*i) + half_width;
-		point2.y = 300 *sin(angle*i)+ half_height;
-	}
+		MeshModel model = scene.GetModel(0);
+		for (int i = 0; i < model.GetFacesCount(); i++)
+		{
+			Face face = model.GetFace(i);
 
+			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
+			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
+			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
 
+			v1 = model.Transform * v1;
+			v2 = model.Transform * v2;
+			v3 = model.Transform * v3;
 
+			v1 /= v1.w;
+			v2 /= v2.w;
+			v3 /= v3.w;
 
+			DrawLine(glm::ivec2(v1.x + half_width, v1.y + half_height), glm::ivec2(v2.x + half_width, v2.y + half_height), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v2.x + half_width, v2.y + half_height), glm::ivec2(v3.x + half_width, v3.y + half_height), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v3.x + half_width, v3.y + half_height), glm::ivec2(v1.x + half_width, v1.y + half_height), glm::ivec3(0, 0, 0));
 
-
-	//end = (glm::rotate(5, glm::vec3(1, 1, 0)))*end;
-
-	// draw circle
+		}
+	}	
 }
 
 int Renderer::GetViewportWidth() const
