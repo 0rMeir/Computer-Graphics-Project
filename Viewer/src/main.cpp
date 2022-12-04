@@ -291,6 +291,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
+
+
 	}
 
 	if(ImGui::CollapsingHeader("Scaling"))
@@ -345,6 +347,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			{
 				scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 			}
+
 		}
 
 		if (ImGui::CollapsingHeader("Scaling"))

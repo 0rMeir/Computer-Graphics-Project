@@ -240,9 +240,12 @@ void Renderer::Render(const Scene& scene)
 			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
 			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
 
-			v1 = model.worldTransformMat * model.localTransformMat * v1;
-			v2 = model.worldTransformMat * model.localTransformMat  * v2;
-			v3 = model.worldTransformMat * model.localTransformMat  * v3;
+			//v1 = model.worldTransformMat * model.localTransformMat * v1;
+			//v2 = model.worldTransformMat * model.localTransformMat  * v2;
+			//v3 = model.worldTransformMat * model.localTransformMat  * v3;
+			v1 = model.transform(v1);
+			v2 = model.transform(v2);
+			v3 = model.transform(v3);
 
 			v1 /= v1.w;
 			v2 /= v2.w;
