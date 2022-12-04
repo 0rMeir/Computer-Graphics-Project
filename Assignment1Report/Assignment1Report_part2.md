@@ -20,7 +20,12 @@ Simple Mesh Display
  
  ![6](https://user-images.githubusercontent.com/100144150/205494149-84cc4c53-341d-47e7-a314-83322287953c.JPG)
 
- 
+ 5.
+
+https://user-images.githubusercontent.com/100144150/205496530-e9da3a7e-eb0e-44ef-934c-01ca3033d08d.mp4
+
+7.
+I used "ImGui::SliderFloat" in order to implement a slider to change the transformation values.
  
  
                             
