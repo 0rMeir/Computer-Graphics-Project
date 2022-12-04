@@ -6,10 +6,6 @@ Name: Or Meir
 Student Number: 308283886
 
 
-Name: 
-
-Student Number: 
-
 ### Lecturer
 *Roi Poranne*
 
