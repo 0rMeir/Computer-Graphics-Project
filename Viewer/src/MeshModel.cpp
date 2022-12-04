@@ -44,25 +44,29 @@ void MeshModel::translateLocal(float x, float y, float z)
 	localTranslateMat = glm::translate(glm::vec3(x, y, z));
 	modelCenter.x += x;
 	modelCenter.y += y;
+	modelCenter.y += z;
 	updateLocal();
 }
 
 void MeshModel::scaleLocal(float x,float y)
 {
-	localScaleMat = glm::scale(glm::vec3(x, x, 1));
+	localScaleMat = glm::scale(glm::vec3(x, x, x));
 	updateLocal();
 }
 
 void MeshModel::rotateLocalX(float x)
 {
 	localRotationMatX = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(1, 0 , 0));
-	updateLocal();	
 }
 
 void MeshModel::rotateLocalY(float x)
 {
 	localRotationMatY = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, 1, 0));
-	updateLocal();
+}
+
+void MeshModel::rotateLocalZ(float x)
+{
+	localRotationMatZ = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0,0, 1));
 }
 
 void MeshModel::updateLocal()
@@ -78,31 +82,36 @@ void MeshModel::translateWorld(float x, float y, float z)
 
 void MeshModel::scaleWorld(float x, float y)
 {
-	worldScaleMat = glm::scale(glm::vec3(x, x, 1));
+	worldScaleMat = glm::scale(glm::vec3(x, x, x));
 	updateWorld();
 }
 
 void MeshModel::rotateWorldlX(float x)
 {
 	worldRotationMatX = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(1880 / 2, 0, 0));
-	updateWorld();
+	
 }
 
 void MeshModel::rotateWorldY(float x)
 {
 	worldRotationMatY = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, 1320 / 2, 0));
-	updateWorld();
+	
+}
+
+void MeshModel::rotateWorldZ(float x)
+{
+	worldRotationMatZ = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, 0, 1));
+	
 }
 
 void MeshModel::updateWorld()
 {
-	worldTransformMat = worldScaleMat * worldTranslateMat * worldRotationMatX*worldRotationMatY;
+	worldTransformMat = worldScaleMat * worldTranslateMat;
 }
-
 
 glm::vec4 MeshModel::transform(glm::vec4 v)
 {
-	v = worldTransformMat * worldRotationMatX * worldRotationMatY * localTransformMat * localRotationMatX * localRotationMatY * v;
+	v = worldTransformMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * localTransformMat * localRotationMatX * localRotationMatY * localRotationMatZ * v;
 	return v;	
 }
 

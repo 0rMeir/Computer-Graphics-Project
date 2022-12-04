@@ -285,14 +285,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
-		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
 		if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -10, 10))
 		{
 			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 		}
-
-
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Z-Axis", &Z_Axis, -10, 10))
+		{
+			scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
+		}
 	}
 
 	if(ImGui::CollapsingHeader("Scaling"))
@@ -310,6 +312,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	{
 		static float Xangle;
 		static float Yangle;
+		static float Zangle;
 
 		ImGui::SetNextItemWidth(100);
 		if (ImGui::SliderFloat("X-Axis Rotation Angle", &Xangle, 1, 360))
@@ -320,6 +323,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		if (ImGui::SliderFloat("Y-Axis Rotation Angle", &Yangle, 1, 360))
 		{
 			scene.GetActiveModel().rotateLocalY(Yangle);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Z-Axis Rotation Angle", &Zangle, 1, 360))
+		{
+			scene.GetActiveModel().rotateLocalZ(Zangle);
 		}
 	}
 
@@ -341,12 +349,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			{
 				scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 			}
-			ImGui::SameLine();
 			ImGui::SetNextItemWidth(100);
 			if (ImGui::SliderFloat("Y-Axis", &Y_Axis, -10, 10))
 			{
 				scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
 			}
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("Z-Axis", &Z_Axis, -10, 10))
+			{
+				scene.GetActiveModel().translateLocal(X_Axis, Y_Axis, Z_Axis);
+			}
+
 
 		}
 
@@ -365,6 +378,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			static float Xangle;
 			static float Yangle;
+			static float Zangle;
 
 			ImGui::SetNextItemWidth(100);
 			if (ImGui::SliderFloat("X-Axis Rotation Angle", &Xangle, 1, 360))
@@ -375,6 +389,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			if (ImGui::SliderFloat("Y-Axis Rotation Angle", &Yangle, 1, 360))
 			{
 				scene.GetActiveModel().rotateWorldY(Yangle);
+			}
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("Z-Axis Rotation Angle", &Zangle, 1, 360))
+			{
+				scene.GetActiveModel().rotateWorldZ(Zangle);
 			}
 		}
 
