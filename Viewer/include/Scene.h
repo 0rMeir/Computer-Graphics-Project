@@ -10,7 +10,9 @@ using namespace std;
 
 class Scene {
 public:
-	Scene();
+	Scene(int w,int h);
+	int width;
+	int height;
 
 	void AddModel(const shared_ptr<MeshModel>& mesh_model);
 	int GetModelCount() const;
@@ -30,6 +32,8 @@ public:
 
 	int getModelsNumber() const;
 	void setModelsNumber(int amount);
+	Camera& Scene::getActiveCamera() const;
+
 
 	
 private:

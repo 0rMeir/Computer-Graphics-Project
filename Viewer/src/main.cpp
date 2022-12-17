@@ -42,7 +42,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char **argv)
 {
-	int windowWidth = 1880, windowHeight = 1320;
+	int windowWidth = 1900, windowHeight = 1200;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
-	Scene scene = Scene();
+	Scene scene = Scene(windowWidth, windowHeight);
 	
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -96,6 +96,7 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 	return window;
 }
 
+
 ImGuiIO& SetupDearImgui(GLFWwindow* window)
 {
 	IMGUI_CHECKVERSION();
@@ -120,20 +121,24 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	int frameBufferWidth, frameBufferHeight;
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
+	bool update = false;
 	
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
 		// TODO: Set new aspect ratio
 	}
 
+	float camSpeed = 0.01f;
+	Camera& cam = (scene.getActiveCamera());
+
 	if (!io.WantCaptureKeyboard)
 	{
-		// TODO: Handle keyboard events here
-		if (io.KeysDown[65])
+		if (ImGui::IsKeyPressed('W'))
 		{
-			// A key is down
-			// Use the ASCII table for more key codes (https://www.asciitable.com/)
+			
 		}
+		
+
 	}
 
 	if (!io.WantCaptureMouse)
@@ -152,6 +157,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	glfwMakeContextCurrent(window);
 	glfwSwapBuffers(window);
+
 }
 
 void Cleanup(GLFWwindow* window)
@@ -159,10 +165,10 @@ void Cleanup(GLFWwindow* window)
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
+
 
 void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 {
@@ -178,7 +184,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			if (ImGui::MenuItem("Open", "CTRL+O"))
 			{
-				
 				nfdchar_t* outPath = NULL;
 				nfdresult_t result = NFD_OpenDialog("obj;", NULL, &outPath);
 				if (result == NFD_OKAY)
@@ -186,7 +191,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.AddModel(Utils::LoadMeshModel(outPath));
 					free(outPath);
 					
-						if (scene.getModelsNumber() > 0) {
+						/*if (scene.getModelsNumber() > 0) {
 							MeshModel model = scene.GetModel(0);
 							for (int i = 0; i < model.GetVerticesCount(); i++) {
 								glm::vec3 temp = model.GetVertex(i);
@@ -203,16 +208,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 								cout << "f " << vertex0 << "//" << vertexn0<< " " << vertex1 << "//" << vertexn1 <<" "<<vertex2<<"//"<<vertexn2 << endl;
 							}
-						}
+						}*/
 
 					
 				}
 				else if (result == NFD_CANCEL)
-				{
-				}
+				{}
 				else
-				{
-				}
+				{}
 				
 			}
 			ImGui::EndMenu();
@@ -398,6 +401,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 
 		ImGui::End(); }
+
+
 
 
 

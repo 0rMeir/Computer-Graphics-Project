@@ -224,11 +224,19 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 	}
 }
 
+
+void Renderer::drawAxis(const Scene& scene)
+{
+	
+}
+
+
 void Renderer::Render(const Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
+		;
 	if (scene.GetModelCount() > 0)
 	{
 		MeshModel model = scene.GetModel(0);
@@ -239,21 +247,23 @@ void Renderer::Render(const Scene& scene)
 			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
 			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
 			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
-
-			v1 = model.transform(v1);
-			v2 = model.transform(v2);
-			v3 = model.transform(v3);
+			glm::mat4x4 view = scene.getActiveCamera().GetViewTransformation();
+			glm::mat4 viewport = scene.getActiveCamera().view_port;
+			glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+			v1 = viewport * proj * view * (model.transform(v1));
+			v2 = viewport  *proj * view * (model.transform(v2));
+			v3 = viewport * proj * view * (model.transform(v3));
 
 			v1 /= v1.w;
 			v2 /= v2.w;
 			v3 /= v3.w;
-
-			DrawLine(glm::ivec2(v1.x + half_width, v1.y + half_height), glm::ivec2(v2.x + half_width, v2.y + half_height), glm::ivec3(0, 0, 0));
-			DrawLine(glm::ivec2(v2.x + half_width, v2.y + half_height), glm::ivec2(v3.x + half_width, v3.y + half_height), glm::ivec3(0, 0, 0));
-			DrawLine(glm::ivec2(v3.x + half_width, v3.y + half_height), glm::ivec2(v1.x + half_width, v1.y + half_height), glm::ivec3(0, 0, 0));
+		
+			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
 
 		}
-	}	
+	}
 }
 
 int Renderer::GetViewportWidth() const

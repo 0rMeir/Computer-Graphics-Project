@@ -42,9 +42,6 @@ const std::string& MeshModel::GetModelName() const
 void MeshModel::translateLocal(float x, float y, float z)
 {
 	localTranslateMat = glm::translate(glm::vec3(x, y, z));
-	modelCenter.x += x;
-	modelCenter.y += y;
-	modelCenter.y += z;
 	updateLocal();
 }
 
@@ -86,15 +83,18 @@ void MeshModel::scaleWorld(float x, float y)
 	updateWorld();
 }
 
+
+//1880 / 2
 void MeshModel::rotateWorldlX(float x)
 {
-	worldRotationMatX = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(1880 / 2, 0, 0));
+	worldRotationMatX = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(1, 0, 0));
 	
 }
 
+//  1320 / 2
 void MeshModel::rotateWorldY(float x)
 {
-	worldRotationMatY = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, 1320 / 2, 0));
+	worldRotationMatY = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(0, 1, 0));
 	
 }
 
@@ -111,7 +111,8 @@ void MeshModel::updateWorld()
 
 glm::vec4 MeshModel::transform(glm::vec4 v)
 {
-	v = worldTransformMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * localTransformMat * localRotationMatX * localRotationMatY * localRotationMatZ * v;
+	v = worldScaleMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldTranslateMat *
+		localScaleMat * localTranslateMat * localRotationMatX * localRotationMatY * localRotationMatZ * v;
 	return v;	
 }
 

@@ -2,11 +2,14 @@
 #include "MeshModel.h"
 #include <string>
 
-Scene::Scene() :
+Scene::Scene(int theWidth, int theHeight) :width(theWidth), height(theHeight),
 	active_camera_index(0),
 	active_model_index(0)
 {
-	
+	std::shared_ptr<Camera> cam = std::make_shared<Camera>();
+	cam->SetProjection(-1, 1, -1, 1 , -1, 1);
+	cam->SetViewPort(width, height);
+	cameras.push_back(cam);
 }
 
 void Scene::AddModel(const std::shared_ptr<MeshModel>& mesh_model)
@@ -78,5 +81,10 @@ void Scene::SetActiveModelIndex(int index)
 int Scene::GetActiveModelIndex() const
 {
 	return active_model_index;
+}
+
+Camera& Scene::getActiveCamera() const 
+{
+	return *cameras[0];
 }
 

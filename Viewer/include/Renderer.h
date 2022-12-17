@@ -14,7 +14,7 @@ public:
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;
 	int flag = 0;
-	
+	void Renderer::drawAxis(const Scene& scene);
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);

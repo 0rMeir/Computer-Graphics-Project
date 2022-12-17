@@ -32,7 +32,7 @@ public:
 	glm::mat4 worldTransformMat = glm::mat4(1.0f);
 	glm::mat4 localTransformMat = glm::mat4(1.0f);
 	glm::vec3 modelCenter = glm::vec3(1880 / 2, 1320 / 2, 0);
-	glm::vec3 newModelCenter = glm::vec3(1880 / 2, 1320 / 2, 0);
+	glm::vec3 newModelCenter = glm::vec3(1880 / 2, 1320 / 2,0);
 
 
 protected:
