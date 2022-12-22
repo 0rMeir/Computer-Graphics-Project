@@ -91,8 +91,6 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 
 }
 
-
-
 void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.
@@ -227,18 +225,120 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 
 void Renderer::drawAxis(const Scene& scene)
 {
+	MeshModel model = scene.GetModel(0);
+
+	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
+	glm::mat4 viewport = scene.getActiveCamera().view_port;
+	glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+
+	//World Axis
+	for (int i = 0; i < 3; i++)
+	{
+		glm::ivec2 start = glm::ivec2(viewport_width / 2+i, (viewport_height / 2)+i);
+		glm::ivec2 y = glm::ivec2((viewport_width / 2)+i, (viewport_height / 2 )+ 400+i);
+		glm::ivec2 x = glm::ivec2((viewport_width / 2) + 400+i, (viewport_height / 2)+i);
+		DrawLine(start, y, glm::ivec3(1, 0, 0));
+		DrawLine(start, x, glm::ivec3(1, 0, 0));
+	}
 	
+
+	glm::ivec4 startM = glm::ivec4(0 , 0 , 0, 1);
+	glm::ivec4 yM = glm::ivec4(0 , 1, 0, 1);
+	glm::ivec4 xM = glm::ivec4(1, 0 , 0, 1);
+	glm::ivec4 zM = glm::ivec4(0, 0, 1, 1);
+
+	startM = viewport * proj * view * model.getWorldTransform() * startM;
+	yM = viewport * proj * view * model.getWorldTransform() * yM;
+	xM = viewport * proj * view * model.getWorldTransform() * xM;
+	zM = viewport * proj * view * model.getWorldTransform() * zM;
+
+	startM /= startM.w;
+	yM /= yM.w;
+	xM /= xM.w;
+	zM /= zM.w;
+
+	DrawLine(startM, yM, glm::ivec3(0, 0, 1));
+	DrawLine(startM, xM, glm::ivec3(0, 0, 1));
+	DrawLine(startM, zM, glm::ivec3(0, 0, 1));
 }
+
+
+void Renderer::drawBoundingBox(const Scene& scene)
+{
+	MeshModel model = scene.GetActiveModel();
+	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
+	glm::mat4 viewport = scene.getActiveCamera().view_port;
+	glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+
+	glm::vec4 rdf = glm::vec4(model.maxX, model.minY, model.maxZ, 1);
+	glm::vec4 ruf = glm::vec4(model.maxX, model.maxY, model.maxZ, 1);
+	glm::vec4 ldf = glm::vec4(model.minX, model.minY, model.maxZ, 1);
+	glm::vec4 luf = glm::vec4(model.minX, model.maxY, model.maxZ, 1);
+	glm::vec4 rdb = glm::vec4(model.maxX, model.minY, model.minZ, 1);
+	glm::vec4 rub = glm::vec4(model.maxX, model.maxY, model.minZ, 1);
+	glm::vec4 ldb = glm::vec4(model.minX, model.minY, model.minZ, 1);
+	glm::vec4 lub = glm::vec4(model.minX, model.maxY, model.minZ, 1);
+
+	rdf = viewport * proj * view * model.transform(rdf); rdf /= rdf.w;
+	ruf = viewport * proj * view * model.transform(ruf); ruf /= ruf.w;
+	ldf = viewport * proj * view * model.transform(ldf); ldf /= ldf.w;
+	luf = viewport * proj * view * model.transform(luf); luf /= luf.w;
+	rdb = viewport * proj * view * model.transform(rdb); rdb /= rdb.w;
+	rub = viewport * proj * view * model.transform(rub); rub /= rub.w;
+	ldb = viewport * proj * view * model.transform(ldb); ldb /= ldb.w;
+	lub = viewport * proj * view * model.transform(lub); lub /= lub.w;
+
+	DrawLine(rdf, ldf, glm::ivec3(0, 0, 1));
+	DrawLine(rdf, rdb, glm::ivec3(0, 0, 1));
+	DrawLine(ldf, ldb, glm::ivec3(0, 0, 1));
+	DrawLine(rdb, ldb, glm::ivec3(0, 0, 1));
+
+	DrawLine(rdf, ruf, glm::ivec3(0, 0, 1));
+	DrawLine(ldf, luf, glm::ivec3(0, 0, 1));
+	DrawLine(ldb, lub, glm::ivec3(0, 0, 1));
+	DrawLine(rdb, rub, glm::ivec3(0, 0, 1));
+
+	DrawLine(ruf, luf, glm::ivec3(0, 0, 1));
+	DrawLine(ruf, rub, glm::ivec3(0, 0, 1));
+	DrawLine(luf, lub, glm::ivec3(0, 0, 1));
+	DrawLine(rub, lub, glm::ivec3(0, 0, 1));
+}
+
+
+void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
+{
+	MeshModel model = scene.GetActiveModel();
+	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
+	glm::mat4 viewport = scene.getActiveCamera().view_port;
+	glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+	
+	glm::vec4 vec = glm::vec4(model.getVertexNormal(faceIndex),1);
+	glm::vec4 vecNorm = 1.1f * vec;
+
+	vec = viewport * proj * view * model.transform(vec); vec /= vec.w;
+	vecNorm = viewport * proj * view * model.transform(vecNorm); vecNorm /= vecNorm.w;
+	DrawLine(vec, vecNorm, glm::ivec3(0, 0, 1));
+
+
+}
+
 
 
 void Renderer::Render(const Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
+
+
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 		;
 	if (scene.GetModelCount() > 0)
 	{
+
+		drawAxis(scene);
+
+		//drawBoundingBox(scene);
+
 		MeshModel model = scene.GetModel(0);
 		for (int i = 0; i < model.GetFacesCount(); i++)
 		{
@@ -247,12 +347,15 @@ void Renderer::Render(const Scene& scene)
 			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
 			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
 			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
-			glm::mat4x4 view = scene.getActiveCamera().GetViewTransformation();
+			glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
 			glm::mat4 viewport = scene.getActiveCamera().view_port;
 			glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+
+
 			v1 = viewport * proj * view * (model.transform(v1));
-			v2 = viewport  *proj * view * (model.transform(v2));
+			v2 = viewport * proj * view * (model.transform(v2));
 			v3 = viewport * proj * view * (model.transform(v3));
+
 
 			v1 /= v1.w;
 			v2 /= v2.w;
@@ -262,7 +365,11 @@ void Renderer::Render(const Scene& scene)
 			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
 
+			//drawNormals(scene,face,i);
+
+
 		}
+
 	}
 }
 

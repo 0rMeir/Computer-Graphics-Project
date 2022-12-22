@@ -9,7 +9,30 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	faces(faces),
 	vertices(vertices),
 	normals(normals)
-{}
+
+{
+	glm::vec3 ver = vertices[0];
+	minX = ver.x;
+	minY = ver.y;
+	minZ = ver.z;
+	maxX = ver.x;
+	maxY = ver.y;
+	maxZ = ver.z;
+	
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		ver = vertices[i];
+		minX = (ver.x < minX) ? ver.x : minX;
+		minY = (ver.y < minY) ? ver.y : minY;
+		minZ = (ver.z < minZ) ? ver.z : minZ;
+
+		maxX = (ver.x > maxX) ? ver.x : maxX;
+		maxY = (ver.y > maxY) ? ver.y : maxY;
+		maxZ = (ver.z > maxZ) ? ver.z : maxZ;
+
+	}
+
+}
 
 MeshModel::~MeshModel()
 {
@@ -18,6 +41,7 @@ MeshModel::~MeshModel()
 const Face& MeshModel::GetFace(int index) const
 {
 	return faces[index];
+
 }
 
 int MeshModel::GetFacesCount() const
@@ -28,6 +52,11 @@ int MeshModel::GetFacesCount() const
 int MeshModel::GetVerticesCount() const
 {
 	return vertices.size();
+}
+
+int MeshModel::GetVerticesNormalCount() const
+{
+	return normals.size();
 }
 
 glm::vec3 MeshModel::GetVertex(int i) {
@@ -111,9 +140,19 @@ void MeshModel::updateWorld()
 
 glm::vec4 MeshModel::transform(glm::vec4 v)
 {
-	v = worldScaleMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldTranslateMat *
-		localScaleMat * localTranslateMat * localRotationMatX * localRotationMatY * localRotationMatZ * v;
+	v = worldTranslateMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldScaleMat *
+		localTranslateMat * localRotationMatX * localRotationMatY * localRotationMatZ * localScaleMat * v;
 	return v;	
+}
+
+glm::mat4 MeshModel::getWorldTransform()
+{
+	return (worldScaleMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldTranslateMat);
+}
+
+glm::vec3 MeshModel::getVertexNormal(int i)
+{
+	return normals[i];
 }
 
 

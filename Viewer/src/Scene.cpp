@@ -7,8 +7,8 @@ Scene::Scene(int theWidth, int theHeight) :width(theWidth), height(theHeight),
 	active_model_index(0)
 {
 	std::shared_ptr<Camera> cam = std::make_shared<Camera>();
-	cam->SetProjection(-1, 1, -1, 1 , -1, 1);
-	cam->SetViewPort(width, height);
+	cam->setProjection(-1, 1, -1, 1 , -1, 1,true);
+	cam->setViewPort(width, height);
 	cameras.push_back(cam);
 }
 

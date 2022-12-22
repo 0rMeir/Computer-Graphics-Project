@@ -14,6 +14,8 @@ public:
 	int GetFacesCount() const;
 	int GetVerticesCount()const;
 	glm::vec3 GetVertex(int i);
+	glm::vec3 getVertexNormal(int i);
+	int GetVerticesNormalCount() const;
 	const std::string& GetModelName() const;
 	void updateWorld();
 	void translateWorld(float x, float y, float z);
@@ -27,12 +29,22 @@ public:
 	void rotateLocalX(float x);
 	void rotateLocalY(float x);
 	void rotateLocalZ(float x);
+
+	glm::mat4 MeshModel::getWorldTransform();
+
 	glm::vec4 transform(glm::vec4 v);
 
 	glm::mat4 worldTransformMat = glm::mat4(1.0f);
 	glm::mat4 localTransformMat = glm::mat4(1.0f);
 	glm::vec3 modelCenter = glm::vec3(1880 / 2, 1320 / 2, 0);
 	glm::vec3 newModelCenter = glm::vec3(1880 / 2, 1320 / 2,0);
+
+	float minX;
+	float minY;
+	float minZ;
+	float maxX;
+	float maxY;
+	float maxZ;
 
 
 protected:
