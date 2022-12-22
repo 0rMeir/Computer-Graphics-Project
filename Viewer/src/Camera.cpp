@@ -1,4 +1,8 @@
 #include "Camera.h"
+#define _USE_MATH_DEFINES
+#include "math.h"
+#include <algorithm>
+using namespace std;
 
 Camera::Camera(){}
 
@@ -39,41 +43,41 @@ void Camera::camScaleLocal(float x, float y, float z)
 
 void Camera::camRotateLocal(float x, float y, float z)
 {
-	CamlocalRotationMat = glm::rotate(CamlocalRotationMat, glm::radians(x), glm::vec3(1, 0, 0));
-	CamlocalRotationMat = glm::rotate(CamlocalRotationMat, glm::radians(y), glm::vec3(0, 1, 0));
-	CamlocalRotationMat = glm::rotate(CamlocalRotationMat, glm::radians(z), glm::vec3(0, 0, 1));
+	CamlocalRotationMat = glm::rotate( (float)(x * (M_PI / 180)), glm::vec3(1, 0, 0));
+	CamlocalRotationMat *= glm::rotate( (float)(y * (M_PI / 180)), glm::vec3(0, 1, 0));
+	CamlocalRotationMat *= glm::rotate((float)(z * (M_PI / 180)), glm::vec3(0, 0, 1));
 	camUpdate();
 }
 
 
 void Camera::camTranslateWorld(float x, float y, float z)
 {
-	CamworldTranslateMat = glm::translate(CamworldTranslateMat, glm::vec3(x, y, z));
+	CamworldTranslateMat = glm::translate( glm::vec3(x, y, z));
 	camUpdate();
 }
 
 void Camera::camScaleWorld(float x, float y, float z)
 {
-	camWorldScaleMat = glm::scale(camWorldScaleMat,glm::vec3(x, y, z));
+	camWorldScaleMat = glm::scale(glm::vec3(x, y, z));
 	camUpdate();
 }
 
 void Camera::camRotateWorld(float x, float y, float z)
 {
-	CamworldRotationMat = glm::rotate(CamworldRotationMat,glm::radians(x), glm::vec3(1, 0, 0));
-	CamworldRotationMat = glm::rotate(CamworldRotationMat, glm::radians(y), glm::vec3(0, 1, 0));
-	CamworldRotationMat = glm::rotate(CamworldRotationMat,glm::radians(z), glm::vec3(0, 0, 1));
+	CamworldRotationMat = glm::rotate( (float)(x * (M_PI / 180)), glm::vec3(1, 0, 0));
+	CamworldRotationMat *= glm::rotate((float)(y * (M_PI / 180)), glm::vec3(0, 1, 0));
+	CamworldRotationMat *= glm::rotate((float)(z * (M_PI / 180)), glm::vec3(0, 0, 1));
 	camUpdate();
 }
 
 void Camera::setViewTransformation()
 {
-	view_transformation = glm::inverse(Camworld * Camlocal) * lookAt;
+	view_transformation = glm::inverse(Camworld*Camlocal) * lookAt;
 }
 void Camera::camUpdate()
 {
 	Camworld = CamworldTranslateMat * CamworldRotationMat * camWorldScaleMat;
-	Camlocal = camLocalTranslateMat * CamlocalRotationMat * camLocalScaleMat;
+	Camlocal = camLocalTranslateMat * CamlocalRotationMat * camLocalScaleMat ;
 	setViewTransformation();
 }
 

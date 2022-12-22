@@ -13,6 +13,9 @@ public:
 	Scene(int w,int h);
 	int width;
 	int height;
+	bool showAxis=false;
+	bool showBoundingBox=false;
+	bool showNormals = false;
 
 	void AddModel(const shared_ptr<MeshModel>& mesh_model);
 	int GetModelCount() const;

@@ -334,10 +334,15 @@ void Renderer::Render(const Scene& scene)
 		;
 	if (scene.GetModelCount() > 0)
 	{
+		if (scene.showAxis)
+		{
+			drawAxis(scene);
+		}
 
-		drawAxis(scene);
-
-		//drawBoundingBox(scene);
+		if (scene.showBoundingBox)
+		{
+			drawBoundingBox(scene);
+		}
 
 		MeshModel model = scene.GetModel(0);
 		for (int i = 0; i < model.GetFacesCount(); i++)

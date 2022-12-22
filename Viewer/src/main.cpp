@@ -24,6 +24,7 @@ float scale=1.0f;
 glm::vec3 camTranslate = glm::vec3(0.0f);
 bool ortho = false;
 bool persp = false;
+bool showAxis = false;
 bool changeScreenSize = false;
 static int windowWidth = 1900, windowHeight = 1200;
 
@@ -439,7 +440,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 		if (ImGui::Checkbox("Perspective", &persp))
 		{
-			scene.getActiveCamera().setProjection(glm::radians(3.0f), windowWidth / windowHeight, 1.0f, 100.0f, -1, 1,false);
+			scene.getActiveCamera().setProjection(-1, 1, -1, 1, -1, 1,false);
 			ortho = false;
 		}
 	}
@@ -448,6 +449,22 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Text("");
 	ImGui::Text("Camera:");
 
+	if (ImGui::CollapsingHeader("View Volume"))
+	{
+		static float CamscaleFactorL = 1;
+
+		if (ImGui::Button("Zoom In"))
+		{
+			CamscaleFactorL *= 0.99f;
+			scene.getActiveCamera().camScaleLocal(CamscaleFactorL, CamscaleFactorL, CamscaleFactorL);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Zoom Out"))
+		{
+			CamscaleFactorL *= 1.01f;
+			scene.getActiveCamera().camScaleLocal(CamscaleFactorL, CamscaleFactorL, CamscaleFactorL);
+		}
+	}
 	if (ImGui::CollapsingHeader("Translate Camera - Local"))
 	{
 		ImGui::Text("Translate Local");
@@ -471,39 +488,83 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 	}
 
-	if (ImGui::CollapsingHeader("Scale Local"))
+
+	if (ImGui::CollapsingHeader("Rotate Camera - Local"))
 	{
-		static float scaleFactorL = 0;
+		static float CamXangleL;
+		static float CamYangleL;
+		static float CamZangleL;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Scale", &scaleFactorL, 1, 500))
+		if (ImGui::SliderFloat("Local X-Axis Rotation Angle", &CamXangleL, 1, 360))
 		{
-			scene.GetActiveModel().scaleLocal(scaleFactorL, scaleFactorL);
+			scene.getActiveCamera().camRotateLocal(CamXangleL, CamYangleL, CamZangleL);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Local Y-Axis Rotation Angle", &CamYangleL, 1, 360))
+		{
+			scene.getActiveCamera().camRotateLocal(CamXangleL, CamYangleL, CamZangleL);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Local Z-Axis Rotation Angle", &CamZangleL, 1, 360))
+		{
+			scene.getActiveCamera().camRotateLocal(CamXangleL, CamYangleL, CamZangleL);
 		}
 	}
 
-	if (ImGui::CollapsingHeader("Rotate Local"))
+	if (ImGui::CollapsingHeader("Translate Camera - World"))
 	{
-		static float XangleL;
-		static float YangleL;
-		static float ZangleL;
-
+		ImGui::Text("Translate Cam World");
+		static float Cam_X_AxisW = 0;
+		static float Cam_Y_AxisW = 0;
+		static float Cam_Z_AxisW = 0;
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local X-Axis Rotation Angle", &XangleL, 1, 360))
+		if (ImGui::SliderFloat("Cam World X-Axis", &Cam_X_AxisW, -10, 10))
 		{
-			scene.GetActiveModel().rotateLocalX(XangleL);
+			scene.getActiveCamera().camTranslateWorld(Cam_X_AxisW, Cam_Y_AxisW, Cam_Z_AxisW);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Y-Axis Rotation Angle", &YangleL, 1, 360))
+		if (ImGui::SliderFloat("Cam World Y-Axis", &Cam_Y_AxisW, -10, 10))
 		{
-			scene.GetActiveModel().rotateLocalY(YangleL);
+			scene.getActiveCamera().camTranslateWorld(Cam_Y_AxisW, Cam_Y_AxisW, Cam_Z_AxisW);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Z-Axis Rotation Angle", &ZangleL, 1, 360))
+		if (ImGui::SliderFloat("Cam World Z-Axis", &Cam_Z_AxisW, -10, 10))
 		{
-			scene.GetActiveModel().rotateLocalZ(ZangleL);
+			scene.getActiveCamera().camTranslateWorld(Cam_X_AxisW, Cam_Y_AxisW, Cam_Z_AxisW);
 		}
 	}
+
+	if (ImGui::CollapsingHeader("Rotate Camera - World"))
+	{
+		static float CamXangleW;
+		static float CamYangleW;
+		static float CamZangleW;
+
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("World X-Axis Rotation Angle", &CamXangleW, 1, 360))
+		{
+			scene.getActiveCamera().camRotateWorld(CamXangleW, CamYangleW, CamZangleW);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("World Y-Axis Rotation Angle", &CamYangleW, 1, 360))
+		{
+			scene.getActiveCamera().camRotateWorld(CamXangleW, CamYangleW, CamZangleW);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("World Z-Axis Rotation Angle", &CamZangleW, 1, 360))
+		{
+			scene.getActiveCamera().camRotateWorld(CamXangleW, CamYangleW, CamZangleW);
+		}
+	}
+
+	ImGui::Text("");
+
+	if (ImGui::Checkbox("Show Axis", &scene.showAxis)) {}
+
+	if (ImGui::Checkbox("Show Bounding Box", &scene.showBoundingBox)) {}
+
+	if (ImGui::Checkbox("Show Normals", &scene.showNormals)) {}
 
 
 
