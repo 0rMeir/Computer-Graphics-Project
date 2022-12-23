@@ -133,6 +133,8 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
+		scene.width = frameBufferWidth;
+		scene.height = frameBufferHeight;
 		scene.getActiveCamera().setViewPort(frameBufferWidth, frameBufferHeight);
 	}
 
@@ -451,35 +453,59 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		if (ImGui::CollapsingHeader("View Volume"))
 		{
-			ImGui::Text("Translate Local");
-			static float left = -1.0f;
-			static float right = 1.0f;
-			static float bottom = -1.0f;
-			static float top = 1.0f;
-			ImGui::SetNextItemWidth(100);
-			if (ImGui::SliderFloat("Left", &left, -10, 10))
+			if (ortho)
 			{
-				bool arg = (ortho) ? true : false;
-				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+				static float left = -1.0f;
+				static float right = 1.0f;
+				static float bottom = -1.0f;
+				static float top = 1.0f;
+				static float Near = 1.0f;
+				static float Far = 1.0f;
+
+				if (ImGui::SliderFloat("Left", &left, -10, 10))
+				{
+					scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
+				}
+				if (ImGui::SliderFloat("Right", &right, -10, 10))
+				{
+					scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
+				}
+				if (ImGui::SliderFloat("Top", &top, -10, 10))
+				{
+					scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
+				}
+				if (ImGui::SliderFloat("Bottom", &bottom, -10, 10))
+				{
+					scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
+				}
+				if (ImGui::SliderFloat("Near", &Near, -10, 10)) {}
+				if (ImGui::SliderFloat("Far", &Far, -10, 10)) {}
 			}
-			if (ImGui::SliderFloat("Right", &right, -10, 10))
+			else if (persp)
 			{
-				bool arg = (ortho) ? true : false;
-				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+				float pFov = 0.0f; 
+				float pNear = 0.0f;
+				float pFar = 0.0f;
+
+				if (ImGui::SliderFloat("Fov Value", &pFov, 0, ((float)(2*M_PI))))
+				{
+					scene.getActiveCamera().setProjection(pFov,((float)scene.width/ (float)scene.height), pNear, pFar, -1, 1, false);
+				}
+				if (ImGui::SliderFloat("Near Value", &pNear, -10, 10))
+				{
+					scene.getActiveCamera().setProjection(pFov, ((float)scene.width / (float)scene.height), pNear, pFar, -1, 1, false);
+				}
+				if (ImGui::SliderFloat("Far Value", &pFar, -10, 10))
+				{
+					scene.getActiveCamera().setProjection(pFov, ((float)scene.width / (float)scene.height), pNear, pFar, -1, 1, false);
+				}
 			}
-			if (ImGui::SliderFloat("Top", &top, -10, 10))
+			else
 			{
-				bool arg = (ortho) ? true : false;
-				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+
 			}
-			if (ImGui::SliderFloat("Bottom", &bottom, -10, 10))
-			{
-				bool arg = (ortho) ? true : false;
-				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
-			}			
 		}
 	}
-
 
 	ImGui::Text("");
 	ImGui::Text("Camera:");

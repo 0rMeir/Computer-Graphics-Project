@@ -135,7 +135,7 @@ void MeshModel::rotateWorldZ(float x)
 
 void MeshModel::updateWorld()
 {
-	worldTransformMat = worldScaleMat * worldTranslateMat;
+	worldTransformMat = worldTranslateMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldScaleMat;
 }
 
 glm::vec4 MeshModel::transform(glm::vec4 v)
@@ -147,7 +147,7 @@ glm::vec4 MeshModel::transform(glm::vec4 v)
 
 glm::mat4 MeshModel::getWorldTransform()
 {
-	return (worldScaleMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldTranslateMat);
+	return (worldTransformMat);
 }
 
 glm::vec3 MeshModel::getVertexNormal(int i)

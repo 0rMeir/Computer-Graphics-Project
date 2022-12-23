@@ -223,7 +223,6 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 	}
 }
 
-
 void Renderer::drawAxis(const Scene& scene)
 {
 	MeshModel model = scene.GetModel(0);
@@ -233,15 +232,25 @@ void Renderer::drawAxis(const Scene& scene)
 	glm::mat4 proj = scene.getActiveCamera().projection_transformation;
 
 	//World Axis
-	for (int i = 0; i < 3; i++)
-	{
-		glm::ivec2 start = glm::ivec2(viewport_width / 2+i, (viewport_height / 2)+i);
-		glm::ivec2 y = glm::ivec2((viewport_width / 2)+i, (viewport_height / 2 )+ 400+i);
-		glm::ivec2 x = glm::ivec2((viewport_width / 2) + 400+i, (viewport_height / 2)+i);
-		DrawLine(start, y, glm::ivec3(1, 0, 0));
-		DrawLine(start, x, glm::ivec3(1, 0, 0));
-	}
-	
+
+	glm::ivec4 start = glm::ivec4(0, 0, 0, 1);
+	glm::ivec4 y = glm::ivec4(0, 1, 0, 1);
+	glm::ivec4 x = glm::ivec4(1, 0, 0, 1);
+	glm::ivec4 z = glm::ivec4(0, 0, 1, 1);
+
+	start = viewport * proj * view *  start;
+	y = viewport * proj * view *  y;
+	x = viewport * proj * view *  x;
+	z = viewport * proj * view *  z;
+
+	start /= start.w;
+	y /= y.w;
+	x /= x.w;
+	z /= z.w;
+
+	DrawLine(start, y, glm::ivec3(1, 0, 0));
+	DrawLine(start, x, glm::ivec3(1, 0, 0));
+	DrawLine(start, z, glm::ivec3(1, 0, 0));
 
 	glm::ivec4 startM = glm::ivec4(0 , 0 , 0, 1);
 	glm::ivec4 yM = glm::ivec4(0 , 1, 0, 1);
@@ -308,7 +317,6 @@ void Renderer::drawBoundingBox(const Scene& scene)
 
 void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
 {
-
 	MeshModel model = scene.GetActiveModel();
 	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
 	glm::mat4 viewport = scene.getActiveCamera().view_port;
@@ -324,23 +332,24 @@ void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
 
 		vec += vertex;
 
+		faceNorm += normal;
+
 		normal = vertex + (0.3f * normal);
 		normal.w = 1;
-		normal = viewport * proj * view * model.transform(normal); 
-		vertex = viewport * proj * view * model.transform(vertex); 
-
+		normal = viewport * proj * view * model.transform(normal); normal /= normal.w;
+		vertex = viewport * proj * view * model.transform(vertex); vertex /= vertex.w;
 
 		DrawLine(vertex, normal, glm::ivec3(0, 0, 1));
-
 	}
 
-	//vec /= 3;
-	//facenorm = glm::triangleNormal()
+	vec /= 3;
+	faceNorm /= 3;
 
-	//faceNorm = viewport * proj * view * model.transform(faceNorm);
+	faceNorm = vec + 0.3f * faceNorm; faceNorm.w = 1;
+	faceNorm = viewport * proj * view * model.transform(faceNorm);  faceNorm/= faceNorm.w;
+	vec = viewport * proj * view * model.transform(vec);  vec /= vec.w;
 
-
-
+	DrawLine(vec, faceNorm, glm::ivec3(0, 0, 1));
 }
 
 
@@ -365,12 +374,9 @@ void Renderer::Render(const Scene& scene)
 			drawBoundingBox(scene);
 		}
 		
-
 		MeshModel model = scene.GetModel(0);
 		for (int i = 0; i < model.GetFacesCount(); i++)
 		{
-
-
 			Face face = model.GetFace(i);
 
 			if (scene.showNormals)
@@ -385,11 +391,9 @@ void Renderer::Render(const Scene& scene)
 			glm::mat4 viewport = scene.getActiveCamera().view_port;
 			glm::mat4 proj = scene.getActiveCamera().projection_transformation;
 
-
 			v1 = viewport * proj * view * (model.transform(v1));
 			v2 = viewport * proj * view * (model.transform(v2));
 			v3 = viewport * proj * view * (model.transform(v3));
-
 
 			v1 /= v1.w;
 			v2 /= v2.w;
@@ -398,10 +402,7 @@ void Renderer::Render(const Scene& scene)
 			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
-
-
 		}
-
 	}
 }
 
