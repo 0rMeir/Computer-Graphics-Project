@@ -102,31 +102,6 @@ void Camera::setProjection(float left, float right, float bottom, float top, flo
 	}
 	else
 	{
-		//projection_transformation = glm::perspective(left, right, bottom, top);
-
-
-		left = left * 0.01745329251994329576923690768489f;
-
-		float tanHalfFovy = tan(left / 2.0f);
-
-		glm::mat4x4 result(0);
-
-		result[0][0] = 1.0f / (right * tanHalfFovy);
-		result[1][1] = 1.0f / (tanHalfFovy);
-		result[2][2] = -(bottom + top) / (bottom - top);
-		result[2][3] = -1.0f;
-		result[3][2] = -(2.0f * top * bottom) / (top - bottom);
-
-		//glm::mat4 compare = {
-		//	(),
-		//	(),
-		//	(),
-		//	()
-		//}
-
-		projection_transformation = result;
-
-
 
 	}	
 }
