@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "InitShader.h"
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/normal.hpp>
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
@@ -307,17 +308,37 @@ void Renderer::drawBoundingBox(const Scene& scene)
 
 void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
 {
+
 	MeshModel model = scene.GetActiveModel();
 	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
 	glm::mat4 viewport = scene.getActiveCamera().view_port;
 	glm::mat4 proj = scene.getActiveCamera().projection_transformation;
-	
-	glm::vec4 vec = glm::vec4(model.getVertexNormal(faceIndex),1);
-	glm::vec4 vecNorm = 1.1f * vec;
 
-	vec = viewport * proj * view * model.transform(vec); vec /= vec.w;
-	vecNorm = viewport * proj * view * model.transform(vecNorm); vecNorm /= vecNorm.w;
-	DrawLine(vec, vecNorm, glm::ivec3(0, 0, 1));
+	glm::vec4 faceNorm = glm::vec4(0.0f);
+	glm::vec4 vec = glm::vec4(0.0f);
+
+	for (int i = 0; i < 3; i++)
+	{
+		glm::vec4 normal = glm::vec4(model.getVertexNormal(face.GetNormalIndex(i)-1),1);
+		glm::vec4 vertex = glm::vec4(model.GetVertex(face.GetVertexIndex(i)-1),1);
+
+		vec += vertex;
+
+		normal = vertex + (0.3f * normal);
+		normal.w = 1;
+		normal = viewport * proj * view * model.transform(normal); 
+		vertex = viewport * proj * view * model.transform(vertex); 
+
+
+		DrawLine(vertex, normal, glm::ivec3(0, 0, 1));
+
+	}
+
+	//vec /= 3;
+	//facenorm = glm::triangleNormal()
+
+	//faceNorm = viewport * proj * view * model.transform(faceNorm);
+
 
 
 }
@@ -343,11 +364,19 @@ void Renderer::Render(const Scene& scene)
 		{
 			drawBoundingBox(scene);
 		}
+		
 
 		MeshModel model = scene.GetModel(0);
 		for (int i = 0; i < model.GetFacesCount(); i++)
 		{
+
+
 			Face face = model.GetFace(i);
+
+			if (scene.showNormals)
+			{
+				drawNormals(scene, face, i);
+			}
 
 			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
 			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
@@ -369,8 +398,6 @@ void Renderer::Render(const Scene& scene)
 			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
-
-			//drawNormals(scene,face,i);
 
 
 		}

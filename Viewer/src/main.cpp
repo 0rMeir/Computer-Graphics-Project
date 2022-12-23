@@ -429,7 +429,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	ImGui::Text("");
-	ImGui::Text("Projection:");
+	ImGui::Text("Projection & View-Volume:");
 
 	if (ImGui::CollapsingHeader("Projection Type"))
 	{
@@ -443,28 +443,47 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			scene.getActiveCamera().setProjection(-1, 1, -1, 1, -1, 1,false);
 			ortho = false;
 		}
+
+		///////////////////////////////////////////////////
+		/////////////////////////////////////////////////
+		///////////////////////////////////////////////
+	    /////////////////////////////////////////////
+
+		if (ImGui::CollapsingHeader("View Volume"))
+		{
+			ImGui::Text("Translate Local");
+			static float left = -1.0f;
+			static float right = 1.0f;
+			static float bottom = -1.0f;
+			static float top = 1.0f;
+			ImGui::SetNextItemWidth(100);
+			if (ImGui::SliderFloat("Left", &left, -10, 10))
+			{
+				bool arg = (ortho) ? true : false;
+				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+			}
+			if (ImGui::SliderFloat("Right", &right, -10, 10))
+			{
+				bool arg = (ortho) ? true : false;
+				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+			}
+			if (ImGui::SliderFloat("Top", &top, -10, 10))
+			{
+				bool arg = (ortho) ? true : false;
+				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+			}
+			if (ImGui::SliderFloat("Bottom", &bottom, -10, 10))
+			{
+				bool arg = (ortho) ? true : false;
+				scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, arg);
+			}			
+		}
 	}
 
 
 	ImGui::Text("");
 	ImGui::Text("Camera:");
 
-	if (ImGui::CollapsingHeader("View Volume"))
-	{
-		static float CamscaleFactorL = 1;
-
-		if (ImGui::Button("Zoom In"))
-		{
-			CamscaleFactorL *= 0.99f;
-			scene.getActiveCamera().camScaleLocal(CamscaleFactorL, CamscaleFactorL, CamscaleFactorL);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Zoom Out"))
-		{
-			CamscaleFactorL *= 1.01f;
-			scene.getActiveCamera().camScaleLocal(CamscaleFactorL, CamscaleFactorL, CamscaleFactorL);
-		}
-	}
 	if (ImGui::CollapsingHeader("Translate Camera - Local"))
 	{
 		ImGui::Text("Translate Local");
@@ -567,8 +586,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	if (ImGui::Checkbox("Show Normals", &scene.showNormals)) {}
 
 
-
-		
 
 	ImGui::End(); 
 

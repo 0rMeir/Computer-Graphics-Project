@@ -83,11 +83,16 @@ void Camera::camUpdate()
 
 void Camera::setProjection(float left, float right, float bottom, float top, float near, float far,bool isOrtho = true)
 {
+
+
 	if (isOrtho)
 	{
 		this->top = top;
 		this->bottom = bottom;
 		projection_transformation = glm::ortho(left, right, bottom, top, near, far);
+
+		projection_transformation = glm::scale(glm::vec3((2 / (right - left)), (2 / (top - bottom)), (2 / (near - far)))) * glm::translate(glm::vec3(-((right + left) / 2), -((bottom + top) / 2), -((near + far) / 2))) * projection_transformation;
+
 	}
 	else
 	{
