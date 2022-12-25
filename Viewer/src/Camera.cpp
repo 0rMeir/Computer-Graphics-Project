@@ -1,6 +1,7 @@
 #include "Camera.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
+#include <cmath>
 #include <algorithm>
 using namespace std;
 
@@ -64,7 +65,7 @@ void Camera::camScaleWorld(float x, float y, float z)
 
 void Camera::camRotateWorld(float x, float y, float z)
 {
-	CamworldRotationMat = glm::rotate( (float)(x * (M_PI / 180)), glm::vec3(1, 0, 0));
+	CamworldRotationMat = glm::rotate((float)(x * (M_PI / 180)), glm::vec3(1, 0, 0));
 	CamworldRotationMat *= glm::rotate((float)(y * (M_PI / 180)), glm::vec3(0, 1, 0));
 	CamworldRotationMat *= glm::rotate((float)(z * (M_PI / 180)), glm::vec3(0, 0, 1));
 
@@ -96,7 +97,10 @@ void Camera::setProjection(float left, float right, float bottom, float top, flo
 	}
 	else
 	{
-		glm::mat4 proj = glm::perspective(left, right, bottom, top);
+		float angle = 45.0f;
+		float aspectRatio = (right - left) / (top - bottom);
+
+		glm::mat4 proj = glm::perspective((float)(M_PI/4), aspectRatio, 1.5f, -10.0f);
 	    
 
 		projection_transformation = glm::mat4(0.0f);

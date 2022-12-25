@@ -315,7 +315,7 @@ void Renderer::drawBoundingBox(const Scene& scene)
 }
 
 
-void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
+void Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
 {
 	MeshModel model = scene.GetActiveModel();
 	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
@@ -327,11 +327,10 @@ void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
 
 	for (int i = 0; i < 3; i++)
 	{
-		glm::vec4 normal = glm::vec4(model.getVertexNormal(face.GetNormalIndex(i)-1),1);
+		glm::vec4 normal = glm::vec4(model.getVertexNormal(face.GetNormalIndex(i) - 1), 1);
 		glm::vec4 vertex = glm::vec4(model.GetVertex(face.GetVertexIndex(i)-1),1);
 
 		vec += vertex;
-
 		faceNorm += normal;
 
 		normal = vertex + (0.3f * normal);
@@ -351,6 +350,7 @@ void Renderer::drawNormals(const Scene& scene,Face& face,int faceIndex)
 
 	DrawLine(vec, faceNorm, glm::ivec3(0, 0, 1));
 }
+
 
 
 
@@ -379,11 +379,6 @@ void Renderer::Render(const Scene& scene)
 		{
 			Face face = model.GetFace(i);
 
-			if (scene.showNormals)
-			{
-				drawNormals(scene, face, i);
-			}
-
 			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
 			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
 			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
@@ -402,6 +397,11 @@ void Renderer::Render(const Scene& scene)
 			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
 			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
+
+			if (scene.showNormals)
+			{
+				drawFaceNormals(scene, face, i);
+			}
 		}
 	}
 }

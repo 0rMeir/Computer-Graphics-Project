@@ -16,7 +16,8 @@ public:
 	int flag = 0;
 	void Renderer::drawAxis(const Scene& scene);
 	void Renderer::drawBoundingBox(const Scene& scene);
-	void Renderer::drawNormals(const Scene& scene,Face& face, int faceIndex);
+	void Renderer::drawFaceNormals(const Scene& scene,Face& face, int faceIndex);
+	void Renderer::drawVerticesNormals(const Scene& scene, Face& face, int faceIndex);
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);

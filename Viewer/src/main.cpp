@@ -466,41 +466,41 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 					if (ImGui::SliderFloat("Left", &left, -10, 10))
 					{
-						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
 					}
 					if (ImGui::SliderFloat("Right", &right, -10, 10))
 					{
-						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
 					}
 					if (ImGui::SliderFloat("Top", &top, -10, 10))
 					{
-						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
 					}
 					if (ImGui::SliderFloat("Bottom", &bottom, -10, 10))
 					{
-						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, -1, 1, true);
 					}
 					if (ImGui::SliderFloat("Near", &Near, -10, 10)) {}
 					if (ImGui::SliderFloat("Far", &Far, -10, 10)) {}
 				}
 
-				if(persp)
+				if(false)
 				{
-					float pFov = 1.0f;
-					float pNear = 0.0f;
-					float pFar = -5.0f;
+					float pFov = (float)(M_PI / 4);
+					float pNear = 1.5f;
+					float pFar = -10.0f;
 
-					if (ImGui::SliderFloat("Fov Value", &pFov, 0.1f, 1.0f))
+					if (ImGui::SliderFloat("Fov Value", &pFov, 0.0f, (float)(2*M_PI)))
 					{
-						scene.getActiveCamera().setProjection(pFov, ((float)scene.width / (float)scene.height), pNear, pFar, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, pFov, pNear, false);
 					}
 					if (ImGui::SliderFloat("Near Value", &pNear, -10, 10))
 					{
-						scene.getActiveCamera().setProjection(pFov, ((float)scene.width / (float)scene.height), pNear, pFar, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, pFov, pNear, false);
 					}
 					if (ImGui::SliderFloat("Far Value", &pFar, -10, 10))
 					{
-						scene.getActiveCamera().setProjection(pFov, ((float)scene.width / (float)scene.height), pNear, pFar, -1, 1, false);
+						scene.getActiveCamera().setProjection(left, right, bottom, top, pFov, pNear, false);
 					}
 				}
 			}
@@ -542,17 +542,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float CamZangleL;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local X-Axis Rotation Angle", &CamXangleL, 1, 360))
+		if (ImGui::SliderFloat("Cam Local X-Axis Rotation Angle", &CamXangleL, 1, 360))
 		{
 			scene.getActiveCamera().camRotateLocal(CamXangleL, CamYangleL, CamZangleL);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Y-Axis Rotation Angle", &CamYangleL, 1, 360))
+		if (ImGui::SliderFloat("Cam Local Y-Axis Rotation Angle", &CamYangleL, 1, 360))
 		{
 			scene.getActiveCamera().camRotateLocal(CamXangleL, CamYangleL, CamZangleL);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Z-Axis Rotation Angle", &CamZangleL, 1, 360))
+		if (ImGui::SliderFloat("Cam Local Z-Axis Rotation Angle", &CamZangleL, 1, 360))
 		{
 			scene.getActiveCamera().camRotateLocal(CamXangleL, CamYangleL, CamZangleL);
 		}
@@ -588,17 +588,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float CamZangleW;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("World X-Axis Rotation Angle", &CamXangleW, 1, 360))
+		if (ImGui::SliderFloat("Cam World X-Axis Rotation Angle", &CamXangleW, 1, 360))
 		{
 			scene.getActiveCamera().camRotateWorld(CamXangleW, CamYangleW, CamZangleW);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("World Y-Axis Rotation Angle", &CamYangleW, 1, 360))
+		if (ImGui::SliderFloat("Cam World Y-Axis Rotation Angle", &CamYangleW, 1, 360))
 		{
 			scene.getActiveCamera().camRotateWorld(CamXangleW, CamYangleW, CamZangleW);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("World Z-Axis Rotation Angle", &CamZangleW, 1, 360))
+		if (ImGui::SliderFloat("Cam World Z-Axis Rotation Angle", &CamZangleW, 1, 360))
 		{
 			scene.getActiveCamera().camRotateWorld(CamXangleW, CamYangleW, CamZangleW);
 		}
