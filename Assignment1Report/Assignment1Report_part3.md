@@ -36,11 +36,15 @@ https://user-images.githubusercontent.com/100144150/209473088-7c8f66bc-31ef-4bbe
 
 
 
-5. I chose T1 as translation and T2 as Rotation. So, first I applied T2 in the world frame and then T1 in the model frame. (T1*T2)
-the rotation transformation T2 was applied to the entire scene, including the camera and the model. then I also added T1 which shifted the position of the camera in the scene. so the effect was a change in the way that the camera views the scene. it appeared like the camera was looking from a different position.
-then I did the opposite, and applied T1 in the world frame and T2 in the model frame.
-the translation was applied to the entire scene, including the camera and the model, while the rotation applied to the camera, so it changed the orientation of the camera in the scene. so, again I got a change in the way the camera views the scene.
-In general, The camera Transformation is just like the model transformation, only inverse, to mimic the effect of camera view.
+5. As you can see in the video, the activation of the first transformation illustrates a rotation of the camera around the model, with the model remaining more or less in the same place in the frame (but in each frame, a different part of it will be visible, as happens in such a situation).
+But, when we activate the second transformation, we will get a situation where the camera actually rotates in place, so it can be clearly seen that the model radically changes its position in the frame, just as it would happen in such a situation.
+In general, since activating the transformations on the camera is done by activating transformations on the model but in the opposite way (by inverting the matrix) we will get exactly the desired result.
+
+
+https://user-images.githubusercontent.com/100144150/209473962-a77b834c-ff60-4cbb-b5da-c34063c3afb9.mp4
+
+
+
 
 6.
 
