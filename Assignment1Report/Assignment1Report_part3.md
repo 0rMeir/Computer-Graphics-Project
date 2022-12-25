@@ -23,8 +23,18 @@ https://user-images.githubusercontent.com/100144150/209365368-fdf52128-43f9-47aa
    Then I simply reduced the window, so that if the proportions were not preserved, the model (or part of it) would not be displayed on the screen.
    
    
+
+https://user-images.githubusercontent.com/100144150/209473504-129b35d8-0241-4f95-8604-31d956229070.mp4
+
+
+   
+   
 4.    
-https://user-images.githubusercontent.com/100144150/209460876-351d7515-1fd0-4fe5-b875-4e26234c76b0.mp4
+
+
+https://user-images.githubusercontent.com/100144150/209473088-7c8f66bc-31ef-4bbe-8ba2-e060ac00f79b.mp4
+
+
 
 5. I chose T1 as translation and T2 as Rotation. So, first I applied T2 in the world frame and then T1 in the model frame. (T1*T2)
 the rotation transformation T2 was applied to the entire scene, including the camera and the model. then I also added T1 which shifted the position of the camera in the scene. so the effect was a change in the way that the camera views the scene. it appeared like the camera was looking from a different position.
