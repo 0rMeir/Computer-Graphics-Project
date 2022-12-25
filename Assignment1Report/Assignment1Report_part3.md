@@ -31,3 +31,22 @@ the rotation transformation T2 was applied to the entire scene, including the ca
 then I did the opposite, and applied T1 in the world frame and T2 in the model frame.
 the translation was applied to the entire scene, including the camera and the model, while the rotation applied to the camera, so it changed the orientation of the camera in the scene. so, again I got a change in the way the camera views the scene.
 In general, The camera Transformation is just like the model transformation, only inverse, to mimic the effect of camera view.
+
+6.
+
+https://user-images.githubusercontent.com/100144150/209471644-5302fc0a-862e-40dd-9dd5-8d38cecead0a.mp4
+
+7.
+
+
+https://user-images.githubusercontent.com/100144150/209471691-0ee7d3cf-49aa-43de-a3e8-550e7e3e5b82.mp4
+
+8. orthogonal Vs perspective.
+   By setting the camera at the same position, the difference bwtween the two projection is clear.
+   The orthogonal projection on all its characteristics is clearly visible as well as the perspective projection which presents us with a realistic approach with a
+    correct view in terms of the distance of the object on its many parts
+
+
+https://user-images.githubusercontent.com/100144150/209471754-8ea795a5-3266-4a74-bcd1-fe3f5368e59d.mp4
+
+
