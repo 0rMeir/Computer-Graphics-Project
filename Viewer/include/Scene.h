@@ -22,6 +22,7 @@ public:
 	int GetModelCount() const;
 	MeshModel& GetModel(int index) const;
 	MeshModel& GetActiveModel() const;
+	bool showRectangles = false;
 	
 	void AddCamera(const shared_ptr<Camera>& camera);
 	int GetCameraCount() const;

@@ -26,6 +26,7 @@ bool ortho = false;
 bool persp = false;
 bool showAxis = false;
 bool changeScreenSize = false;
+bool drawRec = false;
 static int windowWidth = 1900, windowHeight = 1200;
 
 
@@ -342,7 +343,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float scaleFactorL=0;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Scale", &scaleFactorL, 1, 500))
+		if (ImGui::SliderFloat("Local Scale", &scaleFactorL, 1, 20))
 		{
 			scene.GetActiveModel().scaleLocal(scaleFactorL, scaleFactorL);
 		}
@@ -401,7 +402,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float scaleFactor = 0;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Scale", &scaleFactor, 1, 500))
+		if (ImGui::SliderFloat("Scale", &scaleFactor, 1, 20))
 		{
 			scene.GetActiveModel().scaleWorld(scaleFactor, scaleFactor);
 		}
@@ -612,6 +613,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	if (ImGui::Checkbox("Show Bounding Box", &scene.showBoundingBox)) {}
 
 	if (ImGui::Checkbox("Show Normals", &scene.showNormals)) {}
+
+	if (ImGui::Checkbox("Draw rectangles", &scene.showRectangles)) {}
 
 	ImGui::Text("");
 

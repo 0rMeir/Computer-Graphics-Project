@@ -20,7 +20,7 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
 
-	colors[0] = glm::vec3(0, 0, 0);
+	colors[0] = glm::vec3(255, 127, 80);
 	colors[1] = glm::vec3(255, 0, 0);
 	colors[2] = glm::vec3(0, 255, 0);
 	colors[3] = glm::vec3(0, 0, 255);
@@ -391,14 +391,12 @@ void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, flo
 	float maxX = max(v1.x, max(v2.x, v3.x));
 	float maxY = max(v1.y, max(v2.y, v3.y));
 
+	int colorIndex = ((int)((v1.z + v2.z + v3.z) / 3)) % 10;
 
-	float depth = (triangleAverageZ / (maxZ - minZ)) * 10;
-	int index = (depth < 0) ? ( - 1 * (int)depth): (int)depth;
-	glm::vec3 color = colors[index];
+	glm::vec3 color = colors[colorIndex];
 	//glm::vec3 color = glm::vec3(0,0,0);
 
 	//cout << index << endl;
-	
 
 	DrawLine(glm::ivec2(minX, minY), glm::ivec2(minX, maxY), color);
 	DrawLine(glm::ivec2(minX, minY), glm::ivec2(maxX, minY), color);
@@ -536,17 +534,21 @@ void Renderer::Render(const Scene& scene)
 			v2 /= v2.w;
 			v3 /= v3.w;
 		
-			//DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
-			//DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
-			//DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
+			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
 
-			//drawRec(v1, v2, v3,minZ,maxZ,triangleAverageZ);
 
-			fillTriangles(v1, v2, v3,i%10);
+			//fillTriangles(v1, v2, v3,i%10);
 
 			if (scene.showNormals)
 			{
 				drawFaceNormals(scene, face, i);
+			}
+
+			if (scene.showRectangles)
+			{
+				drawRec(v1, v2, v3, minZ, maxZ, triangleAverageZ);
 			}
 		}
 	}
