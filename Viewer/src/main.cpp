@@ -612,6 +612,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	if (ImGui::Checkbox("Show Normals", &scene.showNormals)) {}
 
+	ImGui::Text("");
+
+	//if (ImGui::Checkbox("Show Axis", &scene.drawRec)) {}
+
+
 
 
 	ImGui::End(); 

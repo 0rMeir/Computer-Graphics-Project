@@ -6,6 +6,12 @@
 class Renderer
 {
 public:
+	void clearZBuffer();
+	float* z_buffer;
+	void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int i);
+	bool** triangle_buffer;
+	bool help = true;
+	glm::vec3 colors[10];
 	Renderer(int viewportWidth, int viewportHeight);
 	virtual ~Renderer();
 	void Render(const Scene& scene);
@@ -18,6 +24,7 @@ public:
 	void Renderer::drawBoundingBox(const Scene& scene);
 	void Renderer::drawFaceNormals(const Scene& scene,Face& face, int faceIndex);
 	void Renderer::drawVerticesNormals(const Scene& scene, Face& face, int faceIndex);
+	void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, float maxZ,float triangleMinZ);
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);

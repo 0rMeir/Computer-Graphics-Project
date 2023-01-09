@@ -11,17 +11,36 @@
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
 
+	
+
 Renderer::Renderer(int viewport_width, int viewport_height) :
 	viewport_width(viewport_width),
 	viewport_height(viewport_height)
 {
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
+
+	colors[0] = glm::vec3(0, 0, 0);
+	colors[1] = glm::vec3(255, 0, 0);
+	colors[2] = glm::vec3(0, 255, 0);
+	colors[3] = glm::vec3(0, 0, 255);
+	colors[4] = glm::vec3(255, 255, 0);
+	colors[5] = glm::vec3(0, 255, 255);
+	colors[6] = glm::vec3(255, 0, 255);
+	colors[7] = glm::vec3(128, 0, 0);
+	colors[8] = glm::vec3(128, 128, 0);
+	colors[9] = glm::vec3(0, 128, 0);
+
 }
 
 Renderer::~Renderer()
 {
 	delete[] color_buffer;
+	for (int i = 0; i < viewport_height; i++)
+	{
+		delete[] triangle_buffer[i];
+	}
+	delete[] triangle_buffer;
 }
 
 void Renderer::PutPixel(int i, int j, const glm::vec3& color)
@@ -97,6 +116,18 @@ void Renderer::CreateBuffers(int w, int h)
 	CreateOpenglBuffer(); //Do not remove this line.
 	color_buffer = new float[3 * w * h];
 	ClearColorBuffer(glm::vec3(0.0f, 0.0f, 0.0f));
+	z_buffer = new float[w * h];
+}
+
+void Renderer::clearZBuffer()
+{
+	for (int i = 0; i < viewport_width; i++)
+	{
+		for (int j = 0; j < viewport_height; j++)
+		{
+			z_buffer[Z_INDEX(viewport_width, i, j)] = FLT_MAX;
+		}
+	}
 }
 
 //##############################
@@ -352,12 +383,98 @@ void Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
 }
 
 
+void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, float maxZ, float triangleAverageZ)
+{
+
+	float minX = min(v1.x,min(v2.x, v3.x));
+	float minY = min(v1.y, min(v2.y, v3.y));
+	float maxX = max(v1.x, max(v2.x, v3.x));
+	float maxY = max(v1.y, max(v2.y, v3.y));
+
+
+	float depth = (triangleAverageZ / (maxZ - minZ)) * 10;
+	int index = (depth < 0) ? ( - 1 * (int)depth): (int)depth;
+	glm::vec3 color = colors[index];
+	//glm::vec3 color = glm::vec3(0,0,0);
+
+	//cout << index << endl;
+	
+
+	DrawLine(glm::ivec2(minX, minY), glm::ivec2(minX, maxY), color);
+	DrawLine(glm::ivec2(minX, minY), glm::ivec2(maxX, minY), color);
+	DrawLine(glm::ivec2(maxX, minY), glm::ivec2(maxX, maxY), color);
+	DrawLine(glm::ivec2(maxX, maxY), glm::ivec2(minX, maxY), color);
+
+}
+
+
+
+float sign(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
+{
+	return (v1.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (v1.y - v3.y);
+}
+
+bool PointInTriangle(glm::vec4 pt, glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
+{
+	float d1, d2, d3;
+	bool has_neg, has_pos;
+
+	d1 = sign(pt, v1, v2);
+	d2 = sign(pt, v2, v3);
+	d3 = sign(pt, v3, v1);
+
+	has_neg = (d1 <= 0) || (d2 <= 0) || (d3 <= 0);
+	has_pos = (d1 >= 0) || (d2 >= 0) || (d3 >= 0);
+
+	return !(has_neg && has_pos);
+}
+
+
+
+void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color)
+{
+
+	float minX = min(v1.x, min(v2.x, v3.x));
+	float minY = min(v1.y, min(v2.y, v3.y));
+	float maxX = max(v1.x, max(v2.x, v3.x));
+	float maxY = max(v1.y, max(v2.y, v3.y));
+
+	for (int i = minY; i <= maxY; i++)
+	{
+		bool start = false; bool end = false;
+		glm::vec4 theStart;
+		glm::vec4 theEnd;
+		int j = minX;
+
+		for (; j <= maxX && !start; j++)
+		{
+			glm::vec4 point = glm::vec4(j, i, 1, 1);
+			if (PointInTriangle(point, v1, v2, v3))
+			{
+				start = true;
+				theStart = glm::vec4(j, i, 1, 1);
+			}
+		}
+		for (; (j <= maxX) && !end; j++)
+		{
+			glm::vec4 point = glm::vec4(j+1, i, 1, 1);
+			if (!(PointInTriangle(point, v1, v2, v3)))
+			{
+				end = true;
+				theEnd = glm::vec4(--j, i, 1, 1);
+			}
+			PutPixel(j, i, colors[color]);
+		}
+		
+	}
+
+}
+
 
 
 void Renderer::Render(const Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
-
 
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
@@ -374,7 +491,12 @@ void Renderer::Render(const Scene& scene)
 			drawBoundingBox(scene);
 		}
 		
+
 		MeshModel model = scene.GetModel(0);
+		float minZ = model.minZ;
+		float maxZ = model.maxZ;
+	
+
 		for (int i = 0; i < model.GetFacesCount(); i++)
 		{
 			Face face = model.GetFace(i);
@@ -385,6 +507,7 @@ void Renderer::Render(const Scene& scene)
 			glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
 			glm::mat4 viewport = scene.getActiveCamera().view_port;
 			glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+			float triangleAverageZ = ((v1.z + v2.z + v3.z) / 3);
 
 			v1 = viewport * proj * view * (model.transform(v1));
 			v2 = viewport * proj * view * (model.transform(v2));
@@ -394,16 +517,22 @@ void Renderer::Render(const Scene& scene)
 			v2 /= v2.w;
 			v3 /= v3.w;
 		
-			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
-			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
-			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
+			//DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
+			//DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
+			//DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
+
+			//drawRec(v1, v2, v3,minZ,maxZ,triangleAverageZ);
+
+			fillTriangles(v1, v2, v3,i%10);
 
 			if (scene.showNormals)
 			{
 				drawFaceNormals(scene, face, i);
 			}
 		}
+
 	}
+
 }
 
 int Renderer::GetViewportWidth() const

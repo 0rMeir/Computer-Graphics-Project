@@ -16,6 +16,7 @@ public:
 	bool showAxis=false;
 	bool showBoundingBox=false;
 	bool showNormals = false;
+	bool drawRec = false;
 
 	void AddModel(const shared_ptr<MeshModel>& mesh_model);
 	int GetModelCount() const;
