@@ -180,6 +180,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	}
 
 	renderer.ClearColorBuffer(clear_color);
+	renderer.clearZBuffer();
 	renderer.Render(scene);
 	renderer.SwapBuffers();
 
@@ -354,17 +355,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float ZangleL;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local X-Axis Rotation Angle", &XangleL, 1, 360))
+		if (ImGui::SliderFloat("Local X-Axis Rotation Angle", &XangleL, 0, 360))
 		{
 			scene.GetActiveModel().rotateLocalX(XangleL);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Y-Axis Rotation Angle", &YangleL, 1, 360))
+		if (ImGui::SliderFloat("Local Y-Axis Rotation Angle", &YangleL, 0, 360))
 		{
 			scene.GetActiveModel().rotateLocalY(YangleL);
 		}
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Z-Axis Rotation Angle", &ZangleL, 1, 360))
+		if (ImGui::SliderFloat("Local Z-Axis Rotation Angle", &ZangleL, 0, 360))
 		{
 			scene.GetActiveModel().rotateLocalZ(ZangleL);
 		}

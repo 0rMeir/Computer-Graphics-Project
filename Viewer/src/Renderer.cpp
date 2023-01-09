@@ -423,21 +423,36 @@ bool PointInTriangle(glm::vec4 pt, glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
 	d2 = sign(pt, v2, v3);
 	d3 = sign(pt, v3, v1);
 
-	has_neg = (d1 <= 0) || (d2 <= 0) || (d3 <= 0);
-	has_pos = (d1 >= 0) || (d2 >= 0) || (d3 >= 0);
+	has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+	has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
 
 	return !(has_neg && has_pos);
 }
 
 
+float triangleSurfaceArea(const glm::vec4 p1, const glm::vec4 p2, const glm::vec4 p3)
+{
+	glm::vec3 p1_3(p1.x, p1.y, p1.z);
+	glm::vec3 p2_3(p2.x, p2.y, p2.z);
+	glm::vec3 p3_3(p3.x, p3.y, p3.z);
+	glm::vec3 v1 = p2_3 - p1_3;
+	glm::vec3 v2 = p3_3 - p1_3;
+	glm::vec3 normal = glm::cross(v1, v2);
+	return (0.5f * glm::length(normal) * glm::length(v1));
+}
+
+glm::vec3 triangleNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c)
+{
+	return glm::normalize(glm::cross(b - a, c - a));
+}
 
 void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color)
 {
-
 	float minX = min(v1.x, min(v2.x, v3.x));
 	float minY = min(v1.y, min(v2.y, v3.y));
 	float maxX = max(v1.x, max(v2.x, v3.x));
 	float maxY = max(v1.y, max(v2.y, v3.y));
+
 
 	for (int i = minY; i <= maxY; i++)
 	{
@@ -452,25 +467,29 @@ void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color)
 			if (PointInTriangle(point, v1, v2, v3))
 			{
 				start = true;
-				theStart = glm::vec4(j, i, 1, 1);
+				j = j - 1;
 			}
 		}
 		for (; (j <= maxX) && !end; j++)
 		{
-			glm::vec4 point = glm::vec4(j+1, i, 1, 1);
+			glm::vec4 point = glm::vec4(j, i, 1, 1);
 			if (!(PointInTriangle(point, v1, v2, v3)))
 			{
 				end = true;
-				theEnd = glm::vec4(--j, i, 1, 1);
 			}
-			PutPixel(j, i, colors[color]);
+
+			glm::vec3 n = triangleNormal(v1, v2, v3);
+			float d = -glm::dot(n, glm::vec3(v1));
+			float z = (-d - n.x * point.x - n.y * point.y) / n.z;
+
+			if (z < (z_buffer[viewport_width * i + j]) )
+			{
+				z_buffer[viewport_width * i + j] = z;
+				PutPixel(j, i, colors[color]);
+			}
 		}
-		
 	}
-
 }
-
-
 
 void Renderer::Render(const Scene& scene)
 {
@@ -530,9 +549,7 @@ void Renderer::Render(const Scene& scene)
 				drawFaceNormals(scene, face, i);
 			}
 		}
-
 	}
-
 }
 
 int Renderer::GetViewportWidth() const
