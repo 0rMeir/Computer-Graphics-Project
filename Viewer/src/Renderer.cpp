@@ -394,9 +394,6 @@ void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, flo
 	int colorIndex = ((int)((v1.z + v2.z + v3.z) / 3)) % 10;
 
 	glm::vec3 color = colors[colorIndex];
-	//glm::vec3 color = glm::vec3(0,0,0);
-
-	//cout << index << endl;
 
 	DrawLine(glm::ivec2(minX, minY), glm::ivec2(minX, maxY), color);
 	DrawLine(glm::ivec2(minX, minY), glm::ivec2(maxX, minY), color);
@@ -404,8 +401,6 @@ void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, flo
 	DrawLine(glm::ivec2(maxX, maxY), glm::ivec2(minX, maxY), color);
 
 }
-
-
 
 float sign(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
 {
@@ -480,10 +475,13 @@ void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color)
 			float d = -glm::dot(n, glm::vec3(v1));
 			float z = (-d - n.x * point.x - n.y * point.y) / n.z;
 
-			if (z < (z_buffer[viewport_width * i + j]) )
+			if ((viewport_width * i + j) < (viewport_width * viewport_height) && (viewport_width * i + j) > 0)
 			{
-				z_buffer[viewport_width * i + j] = z;
-				PutPixel(j, i, colors[color]);
+				if (z < (z_buffer[viewport_width * i + j]))
+				{
+					z_buffer[viewport_width * i + j] = z;
+					PutPixel(j, i, colors[color]);
+				}
 			}
 		}
 	}
@@ -534,12 +532,16 @@ void Renderer::Render(const Scene& scene)
 			v2 /= v2.w;
 			v3 /= v3.w;
 		
-			DrawLine(glm::ivec2(v1.x , v1.y ), glm::ivec2(v2.x , v2.y ), glm::ivec3(0, 0, 0));
-			DrawLine(glm::ivec2(v2.x , v2.y ), glm::ivec2(v3.x , v3.y ), glm::ivec3(0, 0, 0));
-			DrawLine(glm::ivec2(v3.x , v3.y ), glm::ivec2(v1.x , v1.y ), glm::ivec3(0, 0, 0));
-
-
-			//fillTriangles(v1, v2, v3,i%10);
+			if (scene.wireFrame)
+			{
+				DrawLine(glm::ivec2(v1.x, v1.y), glm::ivec2(v2.x, v2.y), glm::ivec3(0, 0, 0));
+				DrawLine(glm::ivec2(v2.x, v2.y), glm::ivec2(v3.x, v3.y), glm::ivec3(0, 0, 0));
+				DrawLine(glm::ivec2(v3.x, v3.y), glm::ivec2(v1.x, v1.y), glm::ivec3(0, 0, 0));
+			}
+			else
+			{
+				fillTriangles(v1, v2, v3, i % 10);
+			}
 
 			if (scene.showNormals)
 			{
@@ -548,7 +550,10 @@ void Renderer::Render(const Scene& scene)
 
 			if (scene.showRectangles)
 			{
-				drawRec(v1, v2, v3, minZ, maxZ, triangleAverageZ);
+				if (scene.wireFrame)
+				{
+					drawRec(v1, v2, v3, minZ, maxZ, triangleAverageZ);
+				}
 			}
 		}
 	}
