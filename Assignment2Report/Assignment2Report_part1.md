@@ -4,9 +4,9 @@ Triangle fill and z-buffer
 
 
 1. The implementation was very similar to the implementation of the bounding box.
-   I found the extreme points of every triangle and connected them using drawline.
-   I implemented useda a CheckBox in order to give the user control on the rectangels viweing (On & Off)
-   the color chosen for each rectangle was the color in an array I created contained a few basic colors.
+   I found the extreme points connected them with drawline.
+   I used a CheckBox in order to give the user control on the rectangels viweing (On & Off)
+   the color chosen for each rectangle was a color in an array I created contained a few basic colors.
    the index of the color was determined by the Average Z cordinates (between the three vectors) modulo the size of the array.
 
 2&3. 
