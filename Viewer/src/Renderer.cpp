@@ -10,7 +10,7 @@
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
-
+bool print = true;
 	
 
 Renderer::Renderer(int viewport_width, int viewport_height) :
@@ -346,7 +346,7 @@ void Renderer::drawBoundingBox(const Scene& scene)
 }
 
 
-void Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
+glm::vec3 Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
 {
 	MeshModel model = scene.GetActiveModel();
 	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
@@ -364,28 +364,31 @@ void Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
 		vec += vertex;
 		faceNorm += normal;
 
-		normal = vertex + (0.3f * normal);
+		normal = vertex + (0.01f * normal);
 		normal.w = 1;
 		normal = viewport * proj * view * model.transform(normal); normal /= normal.w;
 		vertex = viewport * proj * view * model.transform(vertex); vertex /= vertex.w;
+		
 
 		DrawLine(vertex, normal, glm::ivec3(0, 0, 1));
+		
 	}
 
 	vec /= 3;
 	faceNorm /= 3;
 
-	faceNorm = vec + 0.3f * faceNorm; faceNorm.w = 1;
+	faceNorm = vec + 0.01f * faceNorm; faceNorm.w = 1;
 	faceNorm = viewport * proj * view * model.transform(faceNorm);  faceNorm/= faceNorm.w;
 	vec = viewport * proj * view * model.transform(vec);  vec /= vec.w;
 
 	DrawLine(vec, faceNorm, glm::ivec3(0, 0, 1));
+
+	return faceNorm;
 }
 
 
 void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, float maxZ, float triangleAverageZ)
 {
-
 	float minX = min(v1.x,min(v2.x, v3.x));
 	float minY = min(v1.y, min(v2.y, v3.y));
 	float maxX = max(v1.x, max(v2.x, v3.x));
@@ -399,7 +402,6 @@ void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, flo
 	DrawLine(glm::ivec2(minX, minY), glm::ivec2(maxX, minY), color);
 	DrawLine(glm::ivec2(maxX, minY), glm::ivec2(maxX, maxY), color);
 	DrawLine(glm::ivec2(maxX, maxY), glm::ivec2(minX, maxY), color);
-
 }
 
 float sign(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
@@ -439,13 +441,22 @@ glm::vec3 triangleNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c)
 	return glm::normalize(glm::cross(b - a, c - a));
 }
 
-void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color)
+// 
+
+
+void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color,glm::vec3 camPos,MeshModel& model,Light& light)
 {
 	float minX = min(v1.x, min(v2.x, v3.x));
 	float minY = min(v1.y, min(v2.y, v3.y));
 	float maxX = max(v1.x, max(v2.x, v3.x));
 	float maxY = max(v1.y, max(v2.y, v3.y));
+	glm::vec3 normal = triangleNormal(v1, v2, v3);
 
+	if (print)
+	{
+		cout << endl << endl << "(" << camPos.x << "," << camPos.y << "," << camPos.z << ")" << endl;
+		print = false;
+	}
 
 	for (int i = minY; i <= maxY; i++)
 	{
@@ -479,8 +490,12 @@ void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color)
 			{
 				if (z < (z_buffer[viewport_width * i + j]))
 				{
+
+					glm::vec3 frag = glm::vec3(j, i, z);
+					glm::vec3 theColor = light.computeColor(model, frag, (triangleNormal(v1,v2,v3)), camPos);
+
 					z_buffer[viewport_width * i + j] = z;
-					PutPixel(j, i, colors[color]);
+					PutPixel(j, i, glm::normalize(theColor));
 				}
 			}
 		}
@@ -540,7 +555,10 @@ void Renderer::Render(const Scene& scene)
 			}
 			else
 			{
-				fillTriangles(v1, v2, v3, i % 10);
+				glm::mat4 cameraInverse = glm::inverse(view);
+				glm::vec3 cameraPosition = glm::vec3(cameraInverse[3]);
+
+				fillTriangles(v1, v2, v3, i % 10,cameraPosition,model, scene.sceneLight);
 			}
 
 			if (scene.showNormals)

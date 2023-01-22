@@ -8,7 +8,7 @@ class Renderer
 public:
 	void clearZBuffer();
 	float* z_buffer;
-	void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int i);
+	void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int i,glm::vec3 camPos,MeshModel& model,Light& light);
 	bool** triangle_buffer;
 	bool help = true;
 	glm::vec3 colors[10];
@@ -22,7 +22,7 @@ public:
 	int flag = 0;
 	void Renderer::drawAxis(const Scene& scene);
 	void Renderer::drawBoundingBox(const Scene& scene);
-	void Renderer::drawFaceNormals(const Scene& scene,Face& face, int faceIndex);
+	glm::vec3 Renderer::drawFaceNormals(const Scene& scene,Face& face, int faceIndex);
 	void Renderer::drawVerticesNormals(const Scene& scene, Face& face, int faceIndex);
 	void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, float maxZ,float triangleMinZ);
 private:

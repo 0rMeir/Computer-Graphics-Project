@@ -343,7 +343,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float scaleFactorL=0;
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::SliderFloat("Local Scale", &scaleFactorL, 1, 2))
+		if (ImGui::SliderFloat("Local Scale", &scaleFactorL, 1, 10))
 		{
 			scene.GetActiveModel().scaleLocal(scaleFactorL, scaleFactorL);
 		}
@@ -619,8 +619,61 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	if (ImGui::Checkbox("Just WireFrame", &scene.wireFrame)) {}
 
 	ImGui::Text("");
+	ImGui::Text("");
+	ImGui::Text("");
 
-	//if (ImGui::Checkbox("Show Axis", &scene.drawRec)) {}
+
+
+	////////////////////////////////
+	////////////////////////////////
+
+
+
+	ImGui::Text("Lighting And Shading:");
+	if (ImGui::CollapsingHeader("Model Light RGB"))
+	{
+		ImGui::ColorPicker3("Model Ambient", (float*)&scene.GetActiveModel().ambient);
+		ImGui::ColorPicker3("Model Diffuse", (float*)&scene.GetActiveModel().diffuse);
+		ImGui::ColorPicker3("Model Specular", (float*)&scene.GetActiveModel().specular);
+	}
+	if (ImGui::CollapsingHeader("Scene Light RGB"))
+	{
+
+		ImGui::ColorPicker3("Scene Ambient", (float*)&scene.sceneLight.ambient);
+		ImGui::ColorPicker3("Scene Diffuse", (float*)&scene.sceneLight.diffuse);
+		ImGui::ColorPicker3("Scene Specular", (float*)&scene.sceneLight.specular);
+	}
+
+	if (ImGui::CollapsingHeader("Translate Light"))
+	{
+		ImGui::Text("Translate Light");
+		static float Light_X_Axis = scene.sceneLight.pos.x;
+		static float Light_Y_Axis = scene.sceneLight.pos.y;
+		static float Light_Z_Axis = scene.sceneLight.pos.z;
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Light X-Axis", &Light_X_Axis, -500, 500))
+		{
+			scene.sceneLight.pos = glm::vec3(Light_X_Axis, Light_Y_Axis, Light_Z_Axis);
+	
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Light Y-Axis", &Light_Y_Axis, -200, 200))
+		{
+			scene.sceneLight.pos = glm::vec3(Light_X_Axis, Light_Y_Axis, Light_Z_Axis);
+		}
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::SliderFloat("Light Z-Axis", &Light_Z_Axis, -200, 200))
+		{
+			scene.sceneLight.pos = glm::vec3(Light_X_Axis, Light_Y_Axis, Light_Z_Axis);
+		}
+	}
+
+	if (ImGui::Checkbox("show ambient product", &scene.showAmbientProduct)) {
+	
+		cout << endl << "(" << scene.sceneLight.ambient.x << "," << scene.sceneLight.ambient.y << "," << scene.sceneLight.ambient.z << ")" <<
+			" * (" << scene.GetActiveModel().ambient.x << "," << scene.GetActiveModel().ambient.y << "," << scene.GetActiveModel().ambient.z << ")" << endl;
+	
+	}
 
 
 

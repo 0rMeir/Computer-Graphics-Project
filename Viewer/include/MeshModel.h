@@ -30,6 +30,11 @@ public:
 	void rotateLocalY(float x);
 	void rotateLocalZ(float x);
 
+	//ambient, diffuse and specular
+	glm::vec3 ambient = glm::vec3(23,105,57);
+	glm::vec3 diffuse=glm::vec3(23, 105, 57);
+	glm::vec3 specular= glm::vec3(23, 105, 57);
+
 	glm::mat4 MeshModel::getWorldTransform();
 
 	glm::vec4 transform(glm::vec4 v);

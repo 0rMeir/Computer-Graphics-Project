@@ -5,6 +5,7 @@
 
 #include "Camera.h"
 #include "MeshModel.h"
+#include "Light.h"
 
 using namespace std;
 
@@ -17,6 +18,8 @@ public:
 	bool showBoundingBox=false;
 	bool showNormals = false;
 	bool drawRec = false;
+
+	bool showAmbientProduct = false;
 
 	void AddModel(const shared_ptr<MeshModel>& mesh_model);
 	int GetModelCount() const;
@@ -39,6 +42,7 @@ public:
 	int getModelsNumber() const;
 	void setModelsNumber(int amount);
 	Camera& Scene::getActiveCamera() const;
+	mutable Light sceneLight;
 
 
 	
