@@ -121,7 +121,7 @@ void Camera::setViewPort(float width, float height)
 	float scale = height / (top - bottom);
 	//float translatex = width / (right - left);
 
-	view_port = glm::translate(glm::vec3(width/2,height/2,0)) * glm::scale(glm::vec3(scale/2, scale/2, scale/2));
+	view_port = glm::translate(glm::vec3(width/2,height/2,0)) * glm::scale(glm::vec3(scale, scale, scale));
 }
 
 glm::mat4x4 Camera::getViewPort()

@@ -11,6 +11,12 @@
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
 bool print = true;
+bool draw = false;
+bool flatShading = true;
+bool phong = false;
+bool reflectVector = false;
+
+bool** boolArr;
 	
 
 Renderer::Renderer(int viewport_width, int viewport_height) :
@@ -106,7 +112,8 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 		}
 		PutPixel(start.x, start.y, color);
 		*coordinate2 += transform2;	
-		e += 2*(secondDelta)*secondDeltaChange;	
+		e += 2*(secondDelta)*secondDeltaChange;
+
 	}
 
 }
@@ -254,7 +261,8 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 	}
 }
 
-void Renderer::drawAxis(const Scene& scene)
+
+void Renderer::drawAxis(Scene& scene)
 {
 	MeshModel model = scene.GetModel(0);
 
@@ -304,7 +312,7 @@ void Renderer::drawAxis(const Scene& scene)
 }
 
 
-void Renderer::drawBoundingBox(const Scene& scene)
+void Renderer::drawBoundingBox(Scene& scene)
 {
 	MeshModel model = scene.GetActiveModel();
 	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
@@ -346,7 +354,7 @@ void Renderer::drawBoundingBox(const Scene& scene)
 }
 
 
-glm::vec3 Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
+glm::vec3 Renderer::drawFaceNormals(Scene& scene,Face& face,int faceIndex)
 {
 	MeshModel model = scene.GetActiveModel();
 	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
@@ -369,21 +377,42 @@ glm::vec3 Renderer::drawFaceNormals(const Scene& scene,Face& face,int faceIndex)
 		normal = viewport * proj * view * model.transform(normal); normal /= normal.w;
 		vertex = viewport * proj * view * model.transform(vertex); vertex /= vertex.w;
 		
-
-		DrawLine(vertex, normal, glm::ivec3(0, 0, 1));
-		
+		if (draw)
+		{
+			DrawLine(vertex, normal, glm::ivec3(0, 0, 1));
+		}	
 	}
 
-	vec /= 3;
-	faceNorm /= 3;
+	vec /= 3.0f;
+	faceNorm /= 3.0f;
 
 	faceNorm = vec + 0.01f * faceNorm; faceNorm.w = 1;
 	faceNorm = viewport * proj * view * model.transform(faceNorm);  faceNorm/= faceNorm.w;
 	vec = viewport * proj * view * model.transform(vec);  vec /= vec.w;
 
-	DrawLine(vec, faceNorm, glm::ivec3(0, 0, 1));
+	if (draw)
+	{
+		DrawLine(vec, faceNorm, glm::ivec3(0, 0, 1));
+	}
 
-	return faceNorm;
+	return (glm::normalize(faceNorm));
+}
+
+
+glm::vec3 Renderer::getFaceNormal(const Scene& scene, Face& face, int faceIndex)
+{
+	MeshModel model = scene.GetActiveModel();
+	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
+	glm::mat4 viewport = scene.getActiveCamera().view_port;
+	glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+	glm::vec4 normal = glm::vec4(0.0f); 
+	for (int i = 0; i < 3; i++)
+	{
+		normal+= glm::vec4(model.getVertexNormal(face.GetNormalIndex(i) - 1), 1);
+	}
+	normal = viewport * proj * view * model.transform(normal);
+	normal /= normal.w;
+	return (normal/3.0f);
 }
 
 
@@ -425,7 +454,7 @@ bool PointInTriangle(glm::vec4 pt, glm::vec4 v1, glm::vec4 v2, glm::vec4 v3)
 }
 
 
-float triangleSurfaceArea(const glm::vec4 p1, const glm::vec4 p2, const glm::vec4 p3)
+float triangleSurfaceArea(const glm::vec3 p1, const glm::vec3 p2, const glm::vec3 p3)
 {
 	glm::vec3 p1_3(p1.x, p1.y, p1.z);
 	glm::vec3 p2_3(p2.x, p2.y, p2.z);
@@ -436,73 +465,119 @@ float triangleSurfaceArea(const glm::vec4 p1, const glm::vec4 p2, const glm::vec
 	return (0.5f * glm::length(normal) * glm::length(v1));
 }
 
-glm::vec3 triangleNormal(glm::vec3 a, glm::vec3 b, glm::vec3 c)
+float triangleSurface(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3) {
+	return glm::abs(0.5f * ((p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)));
+}
+
+glm::vec3 interpolateNormals(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4, glm::vec3 normal1,glm::vec3 normal2,glm::vec3 normal3)
+{
+	float surface1 = triangleSurface(glm::vec2(p1), glm::vec2 (p2), glm::vec2(p4));
+	float surface2 = triangleSurface(glm::vec2(p2), glm::vec2(p3), glm::vec2(p4));
+	float surface3 = triangleSurface(glm::vec2(p1), glm::vec2(p3), glm::vec2(p4));
+	float bigTriangle = surface1+surface2+surface3;
+	return (((surface1/bigTriangle) * normal1) + ((surface2 / bigTriangle) * normal2) + ((surface3 / bigTriangle) * normal3));
+}
+
+glm::vec3 computeFaceNormal(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
 {
 	return glm::normalize(glm::cross(b - a, c - a));
 }
 
-// 
 
 
-void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,int color,glm::vec3 camPos,MeshModel& model,Light& light)
+float Renderer::CalcZ(int i, int j, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
+	float t1 = triangleSurface(glm::vec2(i, j), p2, p3);
+	float t2 = triangleSurface(glm::vec2(i, j), p1, p3);
+	float t3 = triangleSurface(glm::vec2(i, j), p1, p2);
+	float TrianglArea = t1 + t2 + t3;
+	return (((t1 / TrianglArea) * p1.z) + ((t2 / TrianglArea) * p2.z) + ((t3 / TrianglArea) * p3.z));
+}
+
+
+
+
+void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,glm::vec3 camPos,MeshModel& model,Scene& scene, Face& face, int faceIndex)
+{
+	/*if (print)
+	{
+		cout << endl << endl << "(" << camPos.x << "," << camPos.y << "," << camPos.z << ")" << endl;
+		print = false;
+	}*/
+
+	glm::vec3 normal1, normal2, normal3;
+	glm::vec3 theColor;
+	Light& light = scene.sceneLight;
+	glm::vec3 faceNorm = computeFaceNormal(v1, v2, v3);
+	glm::vec3 middleFace = (glm::vec3((v1 + v2 + v3) / 3.0f));
+
+	if (phong)
+	{
+		MeshModel model = scene.GetActiveModel();
+		glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
+		glm::mat4 viewport = scene.getActiveCamera().view_port;
+		glm::mat4 proj = scene.getActiveCamera().projection_transformation;
+		glm::vec3 normal1a = viewport * proj * view * model.transform(glm::vec4(model.getVertexNormal(face.GetNormalIndex(0) - 1), 1.0f));
+		glm::vec3 normal2a = viewport * proj * view * model.transform(glm::vec4(model.getVertexNormal(face.GetNormalIndex(1) - 1), 1.0f));
+		glm::vec3 normal3a = viewport * proj * view * model.transform(glm::vec4(model.getVertexNormal(face.GetNormalIndex(2) - 1), 1.0f));	
+
+	}
+	else
+	{
+		theColor = light.computeColor(model, ((v1 + v2 + v3) / 3.0f), faceNorm, camPos);
+	}
+
 	float minX = min(v1.x, min(v2.x, v3.x));
 	float minY = min(v1.y, min(v2.y, v3.y));
 	float maxX = max(v1.x, max(v2.x, v3.x));
 	float maxY = max(v1.y, max(v2.y, v3.y));
-	glm::vec3 normal = triangleNormal(v1, v2, v3);
 
-	if (print)
+	for (int j = minY; j <= maxY; j++)
 	{
-		cout << endl << endl << "(" << camPos.x << "," << camPos.y << "," << camPos.z << ")" << endl;
-		print = false;
-	}
+		int i = minX;
+		bool end = false;
+		for (; i < maxX && !PointInTriangle(glm::vec4(i, j, 1, 1), v1, v2, v3); i++){}
+		
 
-	for (int i = minY; i <= maxY; i++)
-	{
-		bool start = false; bool end = false;
-		glm::vec4 theStart;
-		glm::vec4 theEnd;
-		int j = minX;
-
-		for (; j <= maxX && !start; j++)
+		for (; i < maxX && PointInTriangle(glm::vec4(i, j, 1, 1), v1, v2, v3); i++)
 		{
-			glm::vec4 point = glm::vec4(j, i, 1, 1);
-			if (PointInTriangle(point, v1, v2, v3))
+			if ((viewport_width * j + i) < (viewport_width * viewport_height) && (viewport_width * j + i) > 0)
 			{
-				start = true;
-				j = j - 1;
-			}
-		}
-		for (; (j <= maxX) && !end; j++)
-		{
-			glm::vec4 point = glm::vec4(j, i, 1, 1);
-			if (!(PointInTriangle(point, v1, v2, v3)))
-			{
-				end = true;
-			}
+				float z = CalcZ(i,j,v1,v2,v3);
 
-			glm::vec3 n = triangleNormal(v1, v2, v3);
-			float d = -glm::dot(n, glm::vec3(v1));
-			float z = (-d - n.x * point.x - n.y * point.y) / n.z;
-
-			if ((viewport_width * i + j) < (viewport_width * viewport_height) && (viewport_width * i + j) > 0)
-			{
-				if (z < (z_buffer[viewport_width * i + j]))
+				if (z < (z_buffer[viewport_width * j + i]))
 				{
-
-					glm::vec3 frag = glm::vec3(j, i, z);
-					glm::vec3 theColor = light.computeColor(model, frag, (triangleNormal(v1,v2,v3)), camPos);
-
-					z_buffer[viewport_width * i + j] = z;
-					PutPixel(j, i, glm::normalize(theColor));
+					if (flatShading)
+					{
+						z_buffer[viewport_width * j + i] = z;
+						PutPixel(i, j, theColor);
+					}
+					
+					else
+					{
+					    z_buffer[viewport_width * j + i] = z;
+						glm::vec3 phongNormal = interpolateNormals(v1, v2, v3, glm::vec3(i, j, z), glm::normalize(normal1), glm::normalize(normal2), glm::normalize(normal3));
+						glm::vec3 theColor = light.computeColor(model, glm::vec3(i,j,z), phongNormal, camPos);
+						PutPixel(i, j, theColor);
+					}
 				}
 			}
 		}
 	}
+
+	if (true)
+	{
+		glm::vec3 camDir = glm::normalize(light.pos - middleFace);
+		glm::vec3 reflectionDirection = glm::reflect(camDir, faceNorm);
+
+		DrawLine(middleFace + 50.f * reflectionDirection, middleFace, glm::vec3(1, 1, 0));
+		DrawLine(middleFace + 50.f * reflectionDirection, middleFace + 90.f * reflectionDirection, glm::vec3(1, 0, 0));
+	}
 }
 
-void Renderer::Render(const Scene& scene)
+
+
+void Renderer::Render(Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
 
@@ -530,14 +605,12 @@ void Renderer::Render(const Scene& scene)
 		for (int i = 0; i < model.GetFacesCount(); i++)
 		{
 			Face face = model.GetFace(i);
-
 			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
 			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
 			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
 			glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
 			glm::mat4 viewport = scene.getActiveCamera().view_port;
 			glm::mat4 proj = scene.getActiveCamera().projection_transformation;
-			float triangleAverageZ = ((v1.z + v2.z + v3.z) / 3);
 
 			v1 = viewport * proj * view * (model.transform(v1));
 			v2 = viewport * proj * view * (model.transform(v2));
@@ -546,6 +619,19 @@ void Renderer::Render(const Scene& scene)
 			v1 /= v1.w;
 			v2 /= v2.w;
 			v3 /= v3.w;
+
+
+			/*if (draw)
+			{
+				glm::vec3 lightDir = glm::normalize(scene.sceneLight.pos - glm::vec3(((v1 + v2 + v3) / 3.0f)));
+				glm::vec3 reflect = glm::normalize(glm::reflect(-lightDir, thisNormal));
+				glm::vec3 newReflect = glm::vec3((v1 + v2 + v3) / 3.0f) + 20.0f * reflect;
+				DrawLine(glm::ivec2(((v1 + v2 + v3) / 3.0f)), glm::ivec2(newReflect), glm::vec3(0, 0, 255));
+				glm::vec3 newLightDir = glm::vec3((v1 + v2 + v3) / 3.0f) + 20.0f * lightDir;
+				DrawLine(glm::ivec2(((v1 + v2 + v3) / 3.0f)), glm::ivec2(newLightDir), glm::vec3(255, 0,0));
+
+			}*/
+
 		
 			if (scene.wireFrame)
 			{
@@ -555,13 +641,14 @@ void Renderer::Render(const Scene& scene)
 			}
 			else
 			{
-				glm::mat4 cameraInverse = glm::inverse(view);
-				glm::vec3 cameraPosition = glm::vec3(cameraInverse[3]);
+				//glm::mat4 cameraInverse = glm::inverse(view);
+				//glm::vec3 cameraPosition = glm::vec3(glm::inverse(view)[3]);
 
-				fillTriangles(v1, v2, v3, i % 10,cameraPosition,model, scene.sceneLight);
+				fillTriangles(v1, v2, v3, (glm::vec3(glm::inverse(view)[3])),model,scene,face, i);
 			}
 
-			if (scene.showNormals)
+
+			/*if (scene.showNormals)
 			{
 				drawFaceNormals(scene, face, i);
 			}
@@ -572,7 +659,7 @@ void Renderer::Render(const Scene& scene)
 				{
 					drawRec(v1, v2, v3, minZ, maxZ, triangleAverageZ);
 				}
-			}
+			}*/
 		}
 	}
 }

@@ -42,10 +42,11 @@ public:
 	int getModelsNumber() const;
 	void setModelsNumber(int amount);
 	Camera& Scene::getActiveCamera() const;
+	vector<Light*> lights;
 	mutable Light sceneLight;
 
+	bool ambient = false , diffuse=false , specular = false;
 
-	
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
 	vector<shared_ptr<Camera>> cameras;

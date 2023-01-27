@@ -31,9 +31,9 @@ public:
 	void rotateLocalZ(float x);
 
 	//ambient, diffuse and specular
-	glm::vec3 ambient = glm::vec3(23,105,57);
-	glm::vec3 diffuse=glm::vec3(23, 105, 57);
-	glm::vec3 specular= glm::vec3(23, 105, 57);
+	glm::vec3 ambient = glm::vec3(0,0,0);
+	glm::vec3 diffuse=glm::vec3(1, 0, 0);
+	glm::vec3 specular= glm::vec3(1, 1, 1);
 
 	glm::mat4 MeshModel::getWorldTransform();
 
