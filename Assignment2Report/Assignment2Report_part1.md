@@ -43,3 +43,10 @@ with z-buffer:
 
 ![c2](https://user-images.githubusercontent.com/100144150/211434162-8c1dba93-709b-4550-967c-afc3cbc799dc.JPG)
 
+
+
+Z-buffer GrayScale Visualization:
+
+![bunnyGS](https://user-images.githubusercontent.com/100144150/220046769-56ca1136-c0be-4539-885f-56048136bf34.jpg)
+
+
