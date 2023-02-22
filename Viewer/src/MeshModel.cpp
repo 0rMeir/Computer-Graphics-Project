@@ -8,7 +8,7 @@ using namespace std;
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name) :
 	faces(faces),
 	vertices(vertices),
-	normals(normals)
+	normals(normals),textureCoords(textureCoords)
 
 {
 	glm::vec3 ver = vertices[0];
@@ -34,9 +34,90 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 
 }
 
+
+
+MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> textures, const std::string& model_name) :
+	faces(faces),
+	vertices(vertices),
+	normals(normals), textureCoords(textures)
+
+{
+	glm::vec3 ver = vertices[0];
+	minX = ver.x;
+	minY = ver.y;
+	minZ = ver.z;
+	maxX = ver.x;
+	maxY = ver.y;
+	maxZ = ver.z;
+
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		ver = vertices[i];
+		minX = (ver.x < minX) ? ver.x : minX;
+		minY = (ver.y < minY) ? ver.y : minY;
+		minZ = (ver.z < minZ) ? ver.z : minZ;
+
+		maxX = (ver.x > maxX) ? ver.x : maxX;
+		maxY = (ver.y > maxY) ? ver.y : maxY;
+		maxZ = (ver.z > maxZ) ? ver.z : maxZ;
+
+	}
+
+
+	for (int i = 0; i < faces.size(); i++)
+	{
+		Face face = faces.at(i);
+		for (int j = 0; j < 3; j++)
+		{
+			int v = face.GetVertexIndex(j) - 1;
+			int n = face.GetNormalIndex(j) - 1;
+			Vertex vertex;
+			vertex.position = vertices[v];
+			vertex.normal = normals[n];
+			if (textureCoords.size() > 0)
+			{
+				int t = face.GetTextureIndex(j) - 1;
+				vertex.textureCoordinates = textureCoords[t];
+			}
+
+			vertexim.push_back(vertex);
+
+		}
+	}
+
+
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertexim.size() * sizeof(Vertex), &vertexim[0], GL_STATIC_DRAW);
+
+	// Vertex Positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	// Normals attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	// Vertex Texture Coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	// unbind to make sure other code does not change it somewhere else
+	glBindVertexArray(0);
+
+}
+
+
+
 MeshModel::~MeshModel()
 {
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
 }
+
 
 const Face& MeshModel::GetFace(int index) const
 {

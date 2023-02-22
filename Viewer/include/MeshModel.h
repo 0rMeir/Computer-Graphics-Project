@@ -1,14 +1,26 @@
 #pragma once
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>
 #include "Face.h"
 #include <glm/gtx/transform.hpp>
 #include <iostream>
+#include <memory>
+#include "MeshModel.h"
+
+
+struct Vertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 textureCoordinates;
+};
 
 class MeshModel
 {
 public:
 	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name);
+	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> textures, const std::string& model_name);
 	virtual ~MeshModel();
 	const Face& GetFace(int index) const;
 	int GetFacesCount() const;
@@ -52,6 +64,16 @@ public:
 	float maxZ;
 
 
+	GLuint vbo;
+	GLuint vao;
+
+	std::vector<Face> faces;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::vec3> textureCoords;
+	std::vector<Vertex> vertexim;
+
+
 protected:
 
 	glm::mat4 localScaleMat = glm::mat4(1.0f);
@@ -66,9 +88,10 @@ protected:
 	glm::mat4 worldRotationMatZ = glm::mat4(1.0f);
 	
 
-private:
-	std::vector<Face> faces;
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> normals;
+//private:
+//	std::vector<Face> faces;
+//	std::vector<glm::vec3> vertices;
+//	std::vector<glm::vec3> normals;
 	std::string model_name;
+
 };

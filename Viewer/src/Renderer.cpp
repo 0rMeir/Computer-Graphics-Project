@@ -565,14 +565,14 @@ void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,glm::vec3 
 		}
 	}
 
-	if (true)
+	/*if (true)
 	{
 		glm::vec3 camDir = glm::normalize(light.pos - middleFace);
 		glm::vec3 reflectionDirection = glm::reflect(camDir, faceNorm);
 
 		DrawLine(middleFace + 50.f * reflectionDirection, middleFace, glm::vec3(1, 1, 0));
 		DrawLine(middleFace + 50.f * reflectionDirection, middleFace + 90.f * reflectionDirection, glm::vec3(1, 0, 0));
-	}
+	}*/
 }
 
 
