@@ -50,7 +50,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 	// TODO: Handle mouse scroll here
 }
 
-int main(int argc, char **argv)
+
+int main(int argc, char** argv)
 {
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -62,20 +63,25 @@ int main(int argc, char **argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene(windowWidth, windowHeight);
-	
+
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
-    while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
 		StartFrame();
 		DrawImguiMenus(io, scene);
 		RenderFrame(window, scene, renderer, io);
-    }
+	}
 
 	Cleanup(window);
-    return 0;
+	return 0;
 }
+
+
+
+
+
 
 static void GlfwErrorCallback(int error, const char* description)
 {

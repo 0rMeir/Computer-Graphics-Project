@@ -2,7 +2,6 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-
 #include "Renderer.h"
 #include "InitShader.h"
 #include <glm/gtx/transform.hpp>
@@ -17,7 +16,6 @@ bool phong = false;
 bool reflectVector = false;
 
 bool** boolArr;
-	
 
 Renderer::Renderer(int viewport_width, int viewport_height) :
 	viewport_width(viewport_width),
@@ -38,6 +36,8 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	colors[9] = glm::vec3(0, 128, 0);
 
 }
+
+
 
 Renderer::~Renderer()
 {
@@ -577,6 +577,51 @@ void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,glm::vec3 
 
 
 
+
+//void Renderer::Render(Scene& scene)
+//{
+//	if (scene.GetModelCount() == 0)
+//	{
+//		return;
+//	}
+//
+//	MeshModel& model = scene.GetModel(0);
+//	Camera& camera = scene.GetActiveCamera();
+//
+//	// Activate the 'colorShader' program (vertex and fragment shaders)
+//	colorShader.use();
+//
+//	// Set the uniform variables
+//	colorShader.setUniform("model", model.getModelTransformation());
+//	colorShader.setUniform("view", camera.getViewTransformation());
+//	colorShader.setUniform("projection", camera.getProjectionTransformation());
+//	colorShader.setUniform("material.textureMap", 0);
+//
+//	// Set 'texture1' as the active texture at slot #0
+//	texture1.bind(0);
+//
+//	// Drag our model's faces (triangles) in fill mode
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//	glBindVertexArray(model.GetVAO());
+//	glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
+//	glBindVertexArray(0);
+//
+//	// Unset 'texture1' as the active texture at slot #0
+//	texture1.unbind(0);
+//
+//	colorShader.setUniform("color", glm::vec3(0, 0, 0));
+//
+//	// Drag our model's faces (triangles) in line mode (wireframe)
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	glBindVertexArray(model.GetVAO());
+//	glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
+//	glBindVertexArray(0);
+//
+//
+//}
+
+
+
 void Renderer::Render(Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
@@ -673,3 +718,17 @@ int Renderer::GetViewportHeight() const
 {
 	return viewport_height;
 }
+
+
+//void Renderer::LoadShaders()
+//{
+//	colorShader.loadShaders("vshader_color.glsl", "fshader_color.glsl");
+//}
+//
+//void Renderer::LoadTextures()
+//{
+//	if (!texture1.loadTexture("bin\\Debug\\crate.jpg", true))
+//	{
+//		texture1.loadTexture("bin\\Release\\crate.jpg", true);
+//	}
+//}

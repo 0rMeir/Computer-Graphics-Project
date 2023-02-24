@@ -19,6 +19,9 @@ struct Vertex
 class MeshModel
 {
 public:
+	glm::mat4 MeshModel::getModelTransformation();
+	GLuint GetVAO();
+	std::vector<Vertex>& GetVertices();
 	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name);
 	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> textures, const std::string& model_name);
 	virtual ~MeshModel();

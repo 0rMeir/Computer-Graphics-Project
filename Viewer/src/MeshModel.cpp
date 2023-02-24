@@ -35,7 +35,6 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 }
 
 
-
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> textures, const std::string& model_name) :
 	faces(faces),
 	vertices(vertices),
@@ -226,6 +225,12 @@ glm::vec4 MeshModel::transform(glm::vec4 v)
 	return v;	
 }
 
+glm::mat4 MeshModel::getModelTransformation()
+{
+	return (worldTranslateMat * worldRotationMatX * worldRotationMatY * worldRotationMatZ * worldScaleMat *
+		localTranslateMat * localRotationMatX * localRotationMatY * localRotationMatZ * localScaleMat);
+}
+
 glm::mat4 MeshModel::getWorldTransform()
 {
 	return (worldTransformMat);
@@ -236,4 +241,14 @@ glm::vec3 MeshModel::getVertexNormal(int i)
 	return normals[i];
 }
 
+
+GLuint MeshModel::GetVAO()
+{
+	return vao;
+}
+
+std::vector<Vertex>& MeshModel::GetVertices()
+{
+	return vertexim;
+}
 

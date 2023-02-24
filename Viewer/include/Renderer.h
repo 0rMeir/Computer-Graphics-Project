@@ -2,10 +2,14 @@
 #include "Scene.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "../../build/ShaderProgram.h"
+#include "../../build/Texture2D.h"
 
 class Renderer
 {
 public:
+	void LoadShaders();
+	void LoadTextures();
 	void clearZBuffer();
 	float* z_buffer;
 	void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,glm::vec3 camPos,MeshModel& model,Scene& scene, Face& face, int faceIndex);
@@ -28,6 +32,10 @@ public:
 	void Renderer::drawRec(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3, float minZ, float maxZ,float triangleMinZ);
 	void Renderer::drawLightVectors(Face face, Scene& scene);
 	float Renderer::CalcZ(int i, int j, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+
+	//ShaderProgram lightShader;
+	//ShaderProgram colorShader;
+	//Texture2D texture1;
 
 
 private:
