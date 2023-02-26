@@ -16,10 +16,9 @@ public:
 	void unbind(GLuint texUnit = 0);
 
 private:
-	//Texture2D(const Texture2D& rhs) {}
-	//Texture2D& operator = (const Texture2D& rhs) {}
+	Texture2D(const Texture2D& rhs) {}
+	Texture2D& operator = (const Texture2D& rhs) {}
 
 	GLuint mTexture;
-	GLuint mTexture_normalmap;
 };
 #endif
