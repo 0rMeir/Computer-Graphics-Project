@@ -20,10 +20,9 @@ class MeshModel
 {
 public:
 	glm::mat4 MeshModel::getModelTransformation();
-	GLuint GetVAO();
+	GLuint GetVAO() const;
 	std::vector<Vertex>& GetVertices();
-	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name);
-	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> textures, const std::string& model_name);
+	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textures, const std::string& model_name);
 	virtual ~MeshModel();
 	const Face& GetFace(int index) const;
 	int GetFacesCount() const;
@@ -66,14 +65,10 @@ public:
 	float maxY;
 	float maxZ;
 
-
-	GLuint vbo;
-	GLuint vao;
-
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
-	std::vector<glm::vec3> textureCoords;
+	std::vector<glm::vec2> textureCoords;
 	std::vector<Vertex> vertexim;
 
 
@@ -89,12 +84,11 @@ protected:
 	glm::mat4 worldRotationMatX = glm::mat4(1.0f);
 	glm::mat4 worldRotationMatY = glm::mat4(1.0f);
 	glm::mat4 worldRotationMatZ = glm::mat4(1.0f);
-	
-
-//private:
-//	std::vector<Face> faces;
-//	std::vector<glm::vec3> vertices;
-//	std::vector<glm::vec3> normals;
 	std::string model_name;
+
+private:
+
+	GLuint vbo;
+	GLuint vao;
 
 };

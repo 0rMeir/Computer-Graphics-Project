@@ -10,7 +10,6 @@ Camera::Camera(){}
 Camera::~Camera(){}
 
 
-
 const glm::mat4x4& Camera::getProjectionTransformation() const
 {
 	return projection_transformation;

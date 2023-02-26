@@ -5,37 +5,8 @@
 #include <algorithm>
 using namespace std;
 
-MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name) :
-	faces(faces),
-	vertices(vertices),
-	normals(normals),textureCoords(textureCoords)
 
-{
-	glm::vec3 ver = vertices[0];
-	minX = ver.x;
-	minY = ver.y;
-	minZ = ver.z;
-	maxX = ver.x;
-	maxY = ver.y;
-	maxZ = ver.z;
-	
-	for (int i = 0; i < vertices.size(); i++)
-	{
-		ver = vertices[i];
-		minX = (ver.x < minX) ? ver.x : minX;
-		minY = (ver.y < minY) ? ver.y : minY;
-		minZ = (ver.z < minZ) ? ver.z : minZ;
-
-		maxX = (ver.x > maxX) ? ver.x : maxX;
-		maxY = (ver.y > maxY) ? ver.y : maxY;
-		maxZ = (ver.z > maxZ) ? ver.z : maxZ;
-
-	}
-
-}
-
-
-MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> textures, const std::string& model_name) :
+MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textures, const std::string& model_name) :
 	faces(faces),
 	vertices(vertices),
 	normals(normals), textureCoords(textures)
@@ -62,27 +33,43 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 
 	}
 
-
+	vertexim.reserve(3 * faces.size());
 	for (int i = 0; i < faces.size(); i++)
 	{
+		//cout << "Face" << i << ": ";
 		Face face = faces.at(i);
 		for (int j = 0; j < 3; j++)
 		{
 			int v = face.GetVertexIndex(j) - 1;
-			int n = face.GetNormalIndex(j) - 1;
 			Vertex vertex;
 			vertex.position = vertices[v];
-			vertex.normal = normals[n];
+
+			if (normals.size() > 0)
+			{
+				int n = face.GetNormalIndex(j) - 1;
+				vertex.normal = normals[n];
+			}
+
 			if (textureCoords.size() > 0)
 			{
 				int t = face.GetTextureIndex(j) - 1;
 				vertex.textureCoordinates = textureCoords[t];
 			}
 
+			//cout << "(" << vertex.position.x << "," << vertex.position.y << "," << vertex.position.z << ") | ";
+			
 			vertexim.push_back(vertex);
 
 		}
+
+		//cout << endl;
 	}
+
+	/*int i = 0;
+	for (Vertex vertex : vertexim)
+	{
+		cout << "vertex" << i++ << ": " << "(" << vertex.position.x << "," << vertex.position.y << "," << vertex.position.z << ") " << endl;;
+	}*/
 
 
 	glGenVertexArrays(1, &vao);
@@ -242,7 +229,7 @@ glm::vec3 MeshModel::getVertexNormal(int i)
 }
 
 
-GLuint MeshModel::GetVAO()
+GLuint MeshModel::GetVAO() const
 {
 	return vao;
 }

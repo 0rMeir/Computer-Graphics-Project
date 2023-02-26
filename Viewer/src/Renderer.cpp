@@ -2,6 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+
 #include "Renderer.h"
 #include "InitShader.h"
 #include <glm/gtx/transform.hpp>
@@ -23,6 +24,7 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 {
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
+	
 
 	colors[0] = glm::vec3(255, 127, 80);
 	colors[1] = glm::vec3(255, 0, 0);
@@ -195,7 +197,7 @@ void Renderer::InitOpenglRendering()
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
 
 	// Loads and compiles a sheder.
-	GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
+	GLuint program = InitShader("vshader.glsl", "fshader.glsl");
 
 	// Make this program the current one.
 	glUseProgram(program);
@@ -496,218 +498,67 @@ float Renderer::CalcZ(int i, int j, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 
 
 
-
-void Renderer::fillTriangles(glm::vec4 v1, glm::vec4 v2, glm::vec4 v3,glm::vec3 camPos,MeshModel& model,Scene& scene, Face& face, int faceIndex)
-{
-	/*if (print)
-	{
-		cout << endl << endl << "(" << camPos.x << "," << camPos.y << "," << camPos.z << ")" << endl;
-		print = false;
-	}*/
-
-	glm::vec3 normal1, normal2, normal3;
-	glm::vec3 theColor;
-	Light& light = scene.sceneLight;
-	glm::vec3 faceNorm = computeFaceNormal(v1, v2, v3);
-	glm::vec3 middleFace = (glm::vec3((v1 + v2 + v3) / 3.0f));
-
-	if (phong)
-	{
-		MeshModel model = scene.GetActiveModel();
-		glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
-		glm::mat4 viewport = scene.getActiveCamera().view_port;
-		glm::mat4 proj = scene.getActiveCamera().projection_transformation;
-		glm::vec3 normal1a = viewport * proj * view * model.transform(glm::vec4(model.getVertexNormal(face.GetNormalIndex(0) - 1), 1.0f));
-		glm::vec3 normal2a = viewport * proj * view * model.transform(glm::vec4(model.getVertexNormal(face.GetNormalIndex(1) - 1), 1.0f));
-		glm::vec3 normal3a = viewport * proj * view * model.transform(glm::vec4(model.getVertexNormal(face.GetNormalIndex(2) - 1), 1.0f));	
-
-	}
-	else
-	{
-		theColor = light.computeColor(model, ((v1 + v2 + v3) / 3.0f), faceNorm, camPos);
-	}
-
-	float minX = min(v1.x, min(v2.x, v3.x));
-	float minY = min(v1.y, min(v2.y, v3.y));
-	float maxX = max(v1.x, max(v2.x, v3.x));
-	float maxY = max(v1.y, max(v2.y, v3.y));
-
-	for (int j = minY; j <= maxY; j++)
-	{
-		int i = minX;
-		bool end = false;
-		for (; i < maxX && !PointInTriangle(glm::vec4(i, j, 1, 1), v1, v2, v3); i++){}
-		
-
-		for (; i < maxX && PointInTriangle(glm::vec4(i, j, 1, 1), v1, v2, v3); i++)
-		{
-			if ((viewport_width * j + i) < (viewport_width * viewport_height) && (viewport_width * j + i) > 0)
-			{
-				float z = CalcZ(i,j,v1,v2,v3);
-
-				if (z < (z_buffer[viewport_width * j + i]))
-				{
-					if (flatShading)
-					{
-						z_buffer[viewport_width * j + i] = z;
-						PutPixel(i, j, theColor);
-					}
-					
-					else
-					{
-					    z_buffer[viewport_width * j + i] = z;
-						glm::vec3 phongNormal = interpolateNormals(v1, v2, v3, glm::vec3(i, j, z), glm::normalize(normal1), glm::normalize(normal2), glm::normalize(normal3));
-						glm::vec3 theColor = light.computeColor(model, glm::vec3(i,j,z), phongNormal, camPos);
-						PutPixel(i, j, theColor);
-					}
-				}
-			}
-		}
-	}
-
-	/*if (true)
-	{
-		glm::vec3 camDir = glm::normalize(light.pos - middleFace);
-		glm::vec3 reflectionDirection = glm::reflect(camDir, faceNorm);
-
-		DrawLine(middleFace + 50.f * reflectionDirection, middleFace, glm::vec3(1, 1, 0));
-		DrawLine(middleFace + 50.f * reflectionDirection, middleFace + 90.f * reflectionDirection, glm::vec3(1, 0, 0));
-	}*/
-}
-
-
-
-
-//void Renderer::Render(Scene& scene)
-//{
-//	if (scene.GetModelCount() == 0)
-//	{
-//		return;
-//	}
-//
-//	MeshModel& model = scene.GetModel(0);
-//	Camera& camera = scene.GetActiveCamera();
-//
-//	// Activate the 'colorShader' program (vertex and fragment shaders)
-//	colorShader.use();
-//
-//	// Set the uniform variables
-//	colorShader.setUniform("model", model.getModelTransformation());
-//	colorShader.setUniform("view", camera.getViewTransformation());
-//	colorShader.setUniform("projection", camera.getProjectionTransformation());
-//	colorShader.setUniform("material.textureMap", 0);
-//
-//	// Set 'texture1' as the active texture at slot #0
-//	texture1.bind(0);
-//
-//	// Drag our model's faces (triangles) in fill mode
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//	glBindVertexArray(model.GetVAO());
-//	glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
-//	glBindVertexArray(0);
-//
-//	// Unset 'texture1' as the active texture at slot #0
-//	texture1.unbind(0);
-//
-//	colorShader.setUniform("color", glm::vec3(0, 0, 0));
-//
-//	// Drag our model's faces (triangles) in line mode (wireframe)
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//	glBindVertexArray(model.GetVAO());
-//	glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
-//	glBindVertexArray(0);
-//
-//
-//}
-
-
-
 void Renderer::Render(Scene& scene)
 {
-	// TODO: Replace this code with real scene rendering code
-
-	int half_width = viewport_width / 2;
-	int half_height = viewport_height / 2;
-		;
-	if (scene.GetModelCount() > 0)
+	if (scene.GetModelCount() == 0)
 	{
-		if (scene.showAxis)
-		{
-			drawAxis(scene);
-		}
-
-		if (scene.showBoundingBox)
-		{
-			drawBoundingBox(scene);
-		}
-		
-
-		MeshModel model = scene.GetModel(0);
-		float minZ = model.minZ;
-		float maxZ = model.maxZ;
-	
-
-		for (int i = 0; i < model.GetFacesCount(); i++)
-		{
-			Face face = model.GetFace(i);
-			glm::vec4 v1 = glm::vec4(model.GetVertex(face.GetVertexIndex(0) - 1),1);
-			glm::vec4 v2 = glm::vec4( model.GetVertex(face.GetVertexIndex(1) - 1),1);
-			glm::vec4 v3 = glm::vec4(model.GetVertex(face.GetVertexIndex(2) - 1),1);
-			glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
-			glm::mat4 viewport = scene.getActiveCamera().view_port;
-			glm::mat4 proj = scene.getActiveCamera().projection_transformation;
-
-			v1 = viewport * proj * view * (model.transform(v1));
-			v2 = viewport * proj * view * (model.transform(v2));
-			v3 = viewport * proj * view * (model.transform(v3));
-
-			v1 /= v1.w;
-			v2 /= v2.w;
-			v3 /= v3.w;
-
-
-			/*if (draw)
-			{
-				glm::vec3 lightDir = glm::normalize(scene.sceneLight.pos - glm::vec3(((v1 + v2 + v3) / 3.0f)));
-				glm::vec3 reflect = glm::normalize(glm::reflect(-lightDir, thisNormal));
-				glm::vec3 newReflect = glm::vec3((v1 + v2 + v3) / 3.0f) + 20.0f * reflect;
-				DrawLine(glm::ivec2(((v1 + v2 + v3) / 3.0f)), glm::ivec2(newReflect), glm::vec3(0, 0, 255));
-				glm::vec3 newLightDir = glm::vec3((v1 + v2 + v3) / 3.0f) + 20.0f * lightDir;
-				DrawLine(glm::ivec2(((v1 + v2 + v3) / 3.0f)), glm::ivec2(newLightDir), glm::vec3(255, 0,0));
-
-			}*/
-
-		
-			if (scene.wireFrame)
-			{
-				DrawLine(glm::ivec2(v1.x, v1.y), glm::ivec2(v2.x, v2.y), glm::ivec3(0, 0, 0));
-				DrawLine(glm::ivec2(v2.x, v2.y), glm::ivec2(v3.x, v3.y), glm::ivec3(0, 0, 0));
-				DrawLine(glm::ivec2(v3.x, v3.y), glm::ivec2(v1.x, v1.y), glm::ivec3(0, 0, 0));
-			}
-			else
-			{
-				//glm::mat4 cameraInverse = glm::inverse(view);
-				//glm::vec3 cameraPosition = glm::vec3(glm::inverse(view)[3]);
-
-				fillTriangles(v1, v2, v3, (glm::vec3(glm::inverse(view)[3])),model,scene,face, i);
-			}
-
-
-			/*if (scene.showNormals)
-			{
-				drawFaceNormals(scene, face, i);
-			}
-
-			if (scene.showRectangles)
-			{
-				if (scene.wireFrame)
-				{
-					drawRec(v1, v2, v3, minZ, maxZ, triangleAverageZ);
-				}
-			}*/
-		}
+		return;
 	}
+
+	MeshModel& model = scene.GetModel(0);
+	glm::mat4x4 modelTranformation = model.getModelTransformation();
+	glm::mat4x4 view = scene.getActiveCamera().getViewTransformation();
+	glm::mat4 viewport = scene.getActiveCamera().getViewPort();
+	glm::mat4 proj = scene.getActiveCamera().getProjectionTransformation();
+
+
+	if (true)
+	{
+		if (print)
+		{
+			int i = 0;
+			for (Vertex vertex : model.GetVertices())
+			{
+				cout << "vertex" << i++ << ": " << "(" << vertex.position.x << "," << vertex.position.y << "," << vertex.position.z << ") " << endl;;
+			}
+		}
+
+		print = false;
+	}
+
+
+	// Activate the 'colorShader' program (vertex and fragment shaders)
+	colorShader.use();
+
+	// Set the uniform variables
+	colorShader.setUniform("model", modelTranformation);
+	colorShader.setUniform("view", view);
+	colorShader.setUniform("projection", proj);
+	colorShader.setUniform("viewPort", viewport);
+	//colorShader.setUniform("material.textureMap", 0);
+
+	// Set 'texture1' as the active texture at slot #0
+	texture1.bind(0);
+
+	// Drag our model's faces (triangles) in fill mode
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBindVertexArray(model.GetVAO());
+	glDrawArrays(GL_TRIANGLES, 0, model.vertexim.size());
+	glBindVertexArray(0);
+
+	// Unset 'texture1' as the active texture at slot #0
+	texture1.unbind(0);
+
+	colorShader.setUniform("color", glm::vec3(0,0,0));
+
+	// Drag our model's faces (triangles) in line mode (wireframe)
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glBindVertexArray(model.GetVAO());
+	//glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
+	//glBindVertexArray(0);
 }
+
+
 
 int Renderer::GetViewportWidth() const
 {
@@ -720,15 +571,12 @@ int Renderer::GetViewportHeight() const
 }
 
 
-//void Renderer::LoadShaders()
-//{
-//	colorShader.loadShaders("vshader_color.glsl", "fshader_color.glsl");
-//}
-//
-//void Renderer::LoadTextures()
-//{
-//	if (!texture1.loadTexture("bin\\Debug\\crate.jpg", true))
-//	{
-//		texture1.loadTexture("bin\\Release\\crate.jpg", true);
-//	}
-//}
+void Renderer::LoadShaders()
+{
+	colorShader.loadShaders("vshader.glsl", "fshader.glsl");
+}
+
+void Renderer::LoadTextures()
+{
+
+}

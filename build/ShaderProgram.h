@@ -47,4 +47,3 @@ private:
 	std::map<string, GLint> uniformLocations;
 };
 #endif // SHADER_H
-

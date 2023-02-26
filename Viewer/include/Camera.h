@@ -7,16 +7,15 @@
 class Camera
 {
 public:
+
+
+
 	Camera();
 	virtual ~Camera();
 	const glm::mat4x4& getProjectionTransformation() const;
 	const glm::mat4x4& getViewTransformation() const;
 	void setCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 	void setProjection(float left, float right, float buttom, float top, float near, float far,bool isOrtho);
-
-	glm::vec3 eye = glm::vec3(0.0f, 0.0f, 3.0f);
-	glm::vec3 at = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	void camTranslateWorld(float x, float y, float z);
 	void camRotateWorld(float x, float y, float z);

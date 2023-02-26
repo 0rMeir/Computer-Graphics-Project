@@ -51,8 +51,11 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
+///////////////// fix main 25/2
+
 int main(int argc, char** argv)
 {
+	int windowWidth = 1920, windowHeight = 1080;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -64,13 +67,23 @@ int main(int argc, char** argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene(windowWidth, windowHeight);
 
+	renderer.LoadShaders();
+	renderer.LoadTextures();
+
+	glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+	glEnable(GL_DEPTH_TEST);
+
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
+	int width = 1920, height = 1080;
 	while (!glfwWindowShouldClose(window))
 	{
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
 		glfwPollEvents();
 		StartFrame();
 		DrawImguiMenus(io, scene);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		RenderFrame(window, scene, renderer, io);
 	}
 
@@ -81,12 +94,14 @@ int main(int argc, char** argv)
 
 
 
-
-
 static void GlfwErrorCallback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+
+
+
+
 
 GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 {
@@ -145,36 +160,8 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		scene.getActiveCamera().setViewPort(frameBufferWidth, frameBufferHeight);
 	}
 
-	float camSpeed = 0.01f;
-	Camera& cam = (scene.getActiveCamera());
-
 	if (!io.WantCaptureKeyboard)
 	{ 
-		if (ImGui::IsKeyPressed('W'))
-		{
-			
-			cam.camTranslateWorld(camTranslate.x, 0.01f, camTranslate.z);		
-		}
-		if (ImGui::IsKeyPressed('S'))
-		{
-			cam.camTranslateWorld(camTranslate.x, -0.01f, camTranslate.z);
-		}
-		if (ImGui::IsKeyPressed('D'))
-		{
-			cam.camTranslateWorld(0.01f, camTranslate.y, camTranslate.z);
-		}
-		if (ImGui::IsKeyPressed('A'))
-		{
-			cam.camTranslateWorld(-0.01f, camTranslate.y, camTranslate.z);
-		}
-		if (ImGui::IsKeyPressed('O'))
-		{
-			cam.camScaleWorld(1.1f, 1.1f,1.1f);
-		}
-		if (ImGui::IsKeyPressed('I'))
-		{
-			cam.camScaleWorld(0.95f,0.95f, 0.95f);
-		}
 	}
 
 	if (!io.WantCaptureMouse)

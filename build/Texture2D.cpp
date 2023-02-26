@@ -1,7 +1,7 @@
 #include "Texture2D.h"
 #include <iostream>
 #include <cassert>
-#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION 
 #include "stb_image.h"
 
 //-----------------------------------------------------------------------------
@@ -103,4 +103,3 @@ void Texture2D::unbind(GLuint texUnit)
 	glActiveTexture(GL_TEXTURE0 + texUnit);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
