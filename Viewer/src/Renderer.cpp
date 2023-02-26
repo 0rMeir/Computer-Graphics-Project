@@ -512,7 +512,7 @@ void Renderer::Render(Scene& scene)
 	glm::mat4 proj = scene.getActiveCamera().getProjectionTransformation();
 
 
-	if (true)
+	/*if (true)
 	{
 		if (print)
 		{
@@ -524,17 +524,30 @@ void Renderer::Render(Scene& scene)
 		}
 
 		print = false;
-	}
+	}*/
 
 
 	// Activate the 'colorShader' program (vertex and fragment shaders)
 	colorShader.use();
+
+	Light light = scene.sceneLight;
 
 	// Set the uniform variables
 	colorShader.setUniform("model", modelTranformation);
 	colorShader.setUniform("view", view);
 	colorShader.setUniform("projection", proj);
 	colorShader.setUniform("viewPort", viewport);
+	colorShader.setUniform("AmbientLight", light.ambient);
+	colorShader.setUniform("material.ambient", model.ambient);
+	colorShader.setUniform("DiffuseLight", light.diffuse);
+	colorShader.setUniform("material.diffuse", model.diffuse);
+	colorShader.setUniform("SpecularLight", light.specular);
+	colorShader.setUniform("material.specular", model.specular);
+	colorShader.setUniform("LightPosition", light.pos);
+	colorShader.setUniform("intensity", 1);
+	colorShader.setUniform("CameraPosition", glm::vec3(glm::inverse(view)[3]));
+
+
 	//colorShader.setUniform("material.textureMap", 0);
 
 	// Set 'texture1' as the active texture at slot #0
