@@ -239,3 +239,16 @@ std::vector<Vertex>& MeshModel::GetVertices()
 	return vertexim;
 }
 
+void MeshModel::changePlane()
+{
+	for (int i = 0; i < vertexim.size(); i++)
+	{
+		vertexim.at(i).textureCoordinates.x = vertexim.at(i).position.x;
+		vertexim.at(i).textureCoordinates.y = vertexim.at(i).position.y;
+	}
+	glBindVertexArray(vao);
+	glBindBuffer(GL_VERTEX_ARRAY, vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertexim.size() * sizeof(Vertex), &vertexim[0]);
+	glBindVertexArray(0);
+}
+

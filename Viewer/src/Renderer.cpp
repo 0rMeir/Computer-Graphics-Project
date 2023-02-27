@@ -546,9 +546,10 @@ void Renderer::Render(Scene& scene)
 	colorShader.setUniform("LightPosition", light.pos);
 	colorShader.setUniform("intensity", 1);
 	colorShader.setUniform("CameraPosition", glm::vec3(glm::inverse(view)[3]));
+	colorShader.setUniform("UseTexture", scene.isUseTexture);
+	colorShader.setUniform("amount", scene.amount);
+	colorShader.setUniform("ToonShading", scene.isToonShading);
 
-
-	//colorShader.setUniform("material.textureMap", 0);
 
 	// Set 'texture1' as the active texture at slot #0
 	texture1.bind(0);
@@ -556,18 +557,18 @@ void Renderer::Render(Scene& scene)
 	// Drag our model's faces (triangles) in fill mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(model.GetVAO());
-	glDrawArrays(GL_TRIANGLES, 0, model.vertexim.size());
+	glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
 	glBindVertexArray(0);
 
 	// Unset 'texture1' as the active texture at slot #0
 	texture1.unbind(0);
 
-	colorShader.setUniform("color", glm::vec3(0,0,0));
-
-	// Drag our model's faces (triangles) in line mode (wireframe)
+	colorShader.setUniform("color", glm::vec3(0, 0, 0));
+	//
+	//// Drag our model's faces (triangles) in line mode (wireframe)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glBindVertexArray(model.GetVAO());
-	//glDrawArrays(GL_TRIANGLES, 0, model.GetVertices().size());
+	//glDrawArrays(GL_TRIANGLES, 0, model.GetModelVertices().size());
 	//glBindVertexArray(0);
 }
 
@@ -591,5 +592,8 @@ void Renderer::LoadShaders()
 
 void Renderer::LoadTextures()
 {
-
+	if (!texture1.loadTexture("C:\\Users\\or\\Desktop\\texJpeg\\crate.jpg", true))
+	{
+		texture1.loadTexture("C:\\Users\\or\\Desktop\\texJpeg\\crate.jpg", true);
+	}
 }

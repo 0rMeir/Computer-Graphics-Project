@@ -43,6 +43,7 @@ public:
 	void rotateLocalX(float x);
 	void rotateLocalY(float x);
 	void rotateLocalZ(float x);
+	void MeshModel::changePlane();
 
 	//ambient, diffuse and specular
 	glm::vec3 ambient = glm::vec3(0,0,0);

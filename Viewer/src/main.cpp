@@ -51,8 +51,6 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
-///////////////// fix main 25/2
-
 int main(int argc, char** argv)
 {
 	int windowWidth = 1920, windowHeight = 1080;
@@ -683,6 +681,13 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		scene.lights.pop_back();
 	}
 
+	ImGui::Checkbox("Toon Shading", &scene.isToonShading);
+
+	ImGui::SliderFloat("amount", &scene.amount, 0, 30);
+
+	int change = 1;
+	ImGui::RadioButton("Plane", &change, 0); ImGui::SameLine();
+	if (change == 0) { scene.GetActiveModel().changePlane(); ImGui::SameLine(); }
 
 
 	ImGui::End(); 

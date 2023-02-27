@@ -13,6 +13,7 @@ public:
 	ShaderProgram lightShader;
 	ShaderProgram colorShader;
 	Texture2D texture1;
+	Texture2D texture_normalmap;
 
 
 	void LoadShaders();

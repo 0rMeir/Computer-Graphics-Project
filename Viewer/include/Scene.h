@@ -47,6 +47,11 @@ public:
 
 	bool ambient = false , diffuse=false , specular = false;
 
+	bool isUseTexture = false;
+	bool isNormalMap=false;
+	float amount = 2.0f;
+	bool isToonShading = false;
+
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
 	vector<shared_ptr<Camera>> cameras;

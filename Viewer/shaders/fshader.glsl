@@ -23,6 +23,9 @@ uniform vec3 specularLight;
 uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform int intensity;
+uniform bool UseTexture;
+uniform float amount;
+uniform bool ToonShading;
 
 
 // Inputs from vertex shader (after interpolation was applied)
@@ -78,7 +81,17 @@ void main()
 	if (theOutput.z < 0) { theOutput.z = 0; }
 
 
+
+	if(ToonShading)
+	{
+		vec3 temp = vec3(floor(theOutput.x * amount),floor(theOutput.y * amount),floor(theOutput.z * amount));
+		theOutput = temp/amount;
+	}
+
+
 	frag_color = vec4(theOutput,1);
+
+	//frag_color = vec4(textureColor,1);
 
 
 	
