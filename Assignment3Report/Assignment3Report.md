@@ -333,30 +333,16 @@ void Renderer::Render(Scene& scene)
 https://user-images.githubusercontent.com/100144150/221567947-5eb7a781-c7e8-4c37-8b0a-f04739ec719f.mp4
 
 
-
-
-
-
 https://user-images.githubusercontent.com/100144150/221568005-13dbb711-4cb2-4488-aaf0-8aec3d895834.mp4
-
-
-
-
 
 
 https://user-images.githubusercontent.com/100144150/221568032-e457e707-3b0d-4f12-8c3e-9cd8e4bcfcb0.mp4
 
 
-
-
-
 7.
 
+
 https://user-images.githubusercontent.com/100144150/221568412-9147f475-bb48-4272-bebc-e535bfd19c5b.mp4
-
-
-
-
 
 
 https://user-images.githubusercontent.com/100144150/221568449-1970aa4c-825d-4bd1-96d5-85b044a53482.mp4
@@ -364,8 +350,6 @@ https://user-images.githubusercontent.com/100144150/221568449-1970aa4c-825d-4bd1
 
 
 8.
-
-
 
 https://user-images.githubusercontent.com/100144150/221568482-408f022e-7b63-48e7-b667-84239dff9d95.mp4
 
